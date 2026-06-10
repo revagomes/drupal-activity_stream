@@ -1,0 +1,78 @@
+<?php
+
+/**
+ * @file
+ * Import Twitter activity into a user's Activity Stream.
+ *
+ * @todo The Twitter v1 RSS API was shut down in 2013. This sub-module needs
+ *   to be updated to use the Twitter v2 API with OAuth 2.0. Until then,
+ *   activitystream_twitter_items_fetch() returns no items.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_activitystream_services().
+ */
+function activitystream_twitter_activitystream_services(): array {
+  $module_path = \Drupal::service('extension.list.module')->getPath('activitystream_twitter');
+  return [
+    'twitter' => [
+      'type' => 'twitter',
+      'name' => t('Twitter'),
+      'verb' => t('tweeted'),
+      'icon' => $module_path . '/twitter.png',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_form_activitystream_accounts_form_alter().
+ */
+function activitystream_twitter_form_activitystream_accounts_form_alter(array &$form, FormStateInterface $form_state): void {
+  $user = $form['#user'];
+  $uid = $user ? $user->id() : \Drupal::currentUser()->id();
+
+  $form['activitystream_twitter'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Twitter'),
+  ];
+  $form['activitystream_twitter']['activitystream_twitter_username'] = [
+    '#type' => 'textfield',
+    '#title' => t('Twitter username'),
+    '#default_value' => activitystream_account_load('twitter', $uid),
+    '#description' => t('Note: Twitter API v1 is no longer available. This field stores your username for future integration.'),
+  ];
+
+  $form['#submit'][] = 'activitystream_twitter_form_activitystream_accounts_form_submit';
+}
+
+/**
+ * Form submit handler for Twitter account configuration.
+ */
+function activitystream_twitter_form_activitystream_accounts_form_submit(array &$form, FormStateInterface $form_state): void {
+  $user = $form['#user'];
+  $uid = $user ? $user->id() : \Drupal::currentUser()->id();
+  $username = trim($form_state->getValue('activitystream_twitter_username', ''));
+  if (!empty($username)) {
+    $username = ltrim($username, '@');
+    activitystream_account_save('twitter', $username, $uid);
+  }
+  else {
+    activitystream_account_delete('twitter', $uid);
+  }
+}
+
+/**
+ * Implements hook_activitystream_twitter_items_fetch().
+ *
+ * @todo Implement using Twitter API v2 with OAuth 2.0. The v1 RSS endpoint
+ *   (twitter.com/statuses/user_timeline/*.rss) was shut down in 2013.
+ */
+function activitystream_twitter_activitystream_twitter_items_fetch(int $uid, mixed $twitter_username): array {
+  \Drupal::logger('activitystream_twitter')->warning(
+    'Twitter item fetch called for user @uid but the Twitter v1 API is no longer available. Update this module to use Twitter API v2.',
+    ['@uid' => $uid]
+  );
+  return [];
+}

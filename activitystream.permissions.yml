@@ -1,0 +1,9 @@
+administer activitystream types:
+  title: 'Administer Activity Stream types'
+  description: 'Manage Activity Stream configuration.'
+  restrict access: true
+
+administer activitystream:
+  title: 'Administer Activity Stream'
+  description: 'Edit and delete all Activity Stream items.'
+  restrict access: true

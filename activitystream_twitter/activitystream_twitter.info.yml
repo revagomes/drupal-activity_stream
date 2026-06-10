@@ -1,0 +1,8 @@
+name: 'Activity Stream Twitter'
+type: module
+description: 'Import Twitter activity into a user Activity Stream. Note: requires update for Twitter API v2.'
+package: 'Activity Stream'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - activitystream:activitystream
+  - activitystream:activitystream_feed

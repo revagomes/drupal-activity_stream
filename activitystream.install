@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for the Activity Stream module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function activitystream_schema(): array {
+  $schema['activitystream_account'] = [
+    'description' => 'Stores per-user service account configuration.',
+    'fields' => [
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'User ID.',
+      ],
+      'service' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Service identifier.',
+      ],
+      'data' => [
+        'type' => 'blob',
+        'size' => 'big',
+        'not null' => TRUE,
+        'description' => 'Serialized account data.',
+      ],
+    ],
+    'primary key' => ['uid', 'service'],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Activity Stream item content is intentionally preserved on uninstall per the
+ * module's archiving philosophy — existing records remain available should the
+ * module be re-enabled later.
+ */
+function activitystream_uninstall(): void {
+  // Intentionally empty: entity content is preserved on uninstall.
+}
