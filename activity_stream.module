@@ -10,11 +10,11 @@ use Drupal\Core\Url;
 /**
  * Implements hook_theme().
  */
-function activitystream_theme(): array {
+function activity_stream_theme(): array {
   return [
-    'activitystream_item' => [
+    'activity_stream_item' => [
       'variables' => [
-        'activitystream_item' => NULL,
+        'activity_stream_item' => NULL,
         'service' => NULL,
         'statement' => [],
         'service_icon' => [],
@@ -22,11 +22,11 @@ function activitystream_theme(): array {
         'external_icon' => [],
         'time_ago' => [],
       ],
-      'template' => 'activitystream-item',
+      'template' => 'activity-stream-item',
     ],
-    'activitystream_items_wrapper' => [
+    'activity_stream_items_wrapper' => [
       'variables' => ['items' => []],
-      'template' => 'activitystream-items-wrapper',
+      'template' => 'activity-stream-items-wrapper',
     ],
   ];
 }
@@ -34,14 +34,14 @@ function activitystream_theme(): array {
 /**
  * Implements hook_permission().
  */
-function activitystream_permission(): array {
+function activity_stream_permission(): array {
   $permissions = [];
-  foreach (activitystream_services_load() as $type => $info) {
+  foreach (activity_stream_services_load() as $type => $info) {
     $type_name = $info['name'];
-    $permissions["edit any $type activitystream"] = [
+    $permissions["edit any $type activity_stream"] = [
       'title' => t('%type_name: Edit any Activity Stream', ['%type_name' => $type_name]),
     ];
-    $permissions["view any $type activitystream"] = [
+    $permissions["view any $type activity_stream"] = [
       'title' => t('%type_name: View any Activity Stream', ['%type_name' => $type_name]),
     ];
   }
@@ -51,35 +51,35 @@ function activitystream_permission(): array {
 /**
  * Implements hook_cron().
  */
-function activitystream_cron(): void {
+function activity_stream_cron(): void {
   $results = \Drupal::database()
-    ->select('activitystream_account', 'a')
+    ->select('activity_stream_account', 'a')
     ->fields('a', ['uid', 'service', 'data'])
     ->execute()
     ->fetchAll();
   foreach ($results as $result) {
-    $items = activitystream_items_fetch((int) $result->uid, $result->service, unserialize($result->data));
-    activitystream_items_save((int) $result->uid, $result->service, $items);
+    $items = activity_stream_items_fetch((int) $result->uid, $result->service, unserialize($result->data));
+    activity_stream_items_save((int) $result->uid, $result->service, $items);
   }
 }
 
 /**
- * Prepares variables for activitystream_item templates.
+ * Prepares variables for activity_stream_item templates.
  *
- * Default template: activitystream-item.html.twig.
+ * Default template: activity-stream-item.html.twig.
  *
  * @param array $variables
  *   An associative array of template variables.
  */
-function template_preprocess_activitystream_item(array &$variables): void {
-  /** @var \Drupal\activitystream\Entity\ActivityStreamItem $item */
-  $item = $variables['activitystream_item'];
+function template_preprocess_activity_stream_item(array &$variables): void {
+  /** @var \Drupal\activity_stream\Entity\ActivityStreamItem $item */
+  $item = $variables['activity_stream_item'];
   $service_id = $item->get('service')->value;
-  $services = activitystream_services_load();
+  $services = activity_stream_services_load();
   $service = $services[$service_id] ?? [];
   $variables['service'] = $service;
 
-  $link = $item->get('activitystream_link')->value;
+  $link = $item->get('activity_stream_link')->value;
   $id = $item->id();
 
   // Statement: actor — verb — object.
@@ -117,7 +117,7 @@ function template_preprocess_activitystream_item(array &$variables): void {
   }
 
   // Permalink icon: links to the canonical entity route.
-  $module_path = \Drupal::service('extension.list.module')->getPath('activitystream');
+  $module_path = \Drupal::service('extension.list.module')->getPath('activity_stream');
   $permalink_icon_uri = '/' . $module_path . '/images/permalink.png';
   $variables['permalink_icon'] = [
     '#type' => 'link',
@@ -126,8 +126,8 @@ function template_preprocess_activitystream_item(array &$variables): void {
       '#uri' => $permalink_icon_uri,
       '#alt' => t('Permalink'),
     ],
-    '#url' => Url::fromRoute('entity.activitystream_item.canonical', [
-      'activitystream_item' => $id,
+    '#url' => Url::fromRoute('entity.activity_stream_item.canonical', [
+      'activity_stream_item' => $id,
     ]),
   ];
 
@@ -146,15 +146,15 @@ function template_preprocess_activitystream_item(array &$variables): void {
 }
 
 /**
- * Loads all registered activitystream service definitions.
+ * Loads all registered activity_stream service definitions.
  *
  * @return array
  *   Associative array of service definitions keyed by service machine name.
  */
-function activitystream_services_load(): array {
+function activity_stream_services_load(): array {
   $services = &drupal_static(__FUNCTION__);
   if (!isset($services)) {
-    $services = \Drupal::moduleHandler()->invokeAll('activitystream_services');
+    $services = \Drupal::moduleHandler()->invokeAll('activity_stream_services');
   }
   return $services;
 }
@@ -170,10 +170,10 @@ function activitystream_services_load(): array {
  * @return mixed
  *   The unserialized account data, or NULL if not found.
  */
-function activitystream_account_load(string $service, ?int $uid = NULL): mixed {
+function activity_stream_account_load(string $service, ?int $uid = NULL): mixed {
   $uid = $uid ?? \Drupal::currentUser()->id();
   $data = \Drupal::database()
-    ->select('activitystream_account', 'a')
+    ->select('activity_stream_account', 'a')
     ->fields('a', ['data'])
     ->condition('service', $service)
     ->condition('uid', $uid)
@@ -192,9 +192,9 @@ function activitystream_account_load(string $service, ?int $uid = NULL): mixed {
  * @param int|null $uid
  *   The user ID. Defaults to the current user.
  */
-function activitystream_account_save(string $service, mixed $data, ?int $uid = NULL): void {
+function activity_stream_account_save(string $service, mixed $data, ?int $uid = NULL): void {
   $uid = $uid ?? \Drupal::currentUser()->id();
-  \Drupal::database()->merge('activitystream_account')
+  \Drupal::database()->merge('activity_stream_account')
     ->keys(['uid' => $uid, 'service' => $service])
     ->fields(['data' => serialize($data)])
     ->execute();
@@ -208,9 +208,9 @@ function activitystream_account_save(string $service, mixed $data, ?int $uid = N
  * @param int|null $uid
  *   The user ID. Defaults to the current user.
  */
-function activitystream_account_delete(string $service, ?int $uid = NULL): void {
+function activity_stream_account_delete(string $service, ?int $uid = NULL): void {
   $uid = $uid ?? \Drupal::currentUser()->id();
-  \Drupal::database()->delete('activitystream_account')
+  \Drupal::database()->delete('activity_stream_account')
     ->condition('service', $service)
     ->condition('uid', $uid)
     ->execute();
@@ -229,25 +229,25 @@ function activitystream_account_delete(string $service, ?int $uid = NULL): void 
  * @return array
  *   Array of item arrays returned by the service hook.
  */
-function activitystream_items_fetch(int $uid, string $service, mixed $data): array {
-  $items = \Drupal::moduleHandler()->invokeAll('activitystream_' . $service . '_items_fetch', [$uid, $data]);
-  \Drupal::moduleHandler()->alter('activitystream_' . $service . '_items', $items, $uid, $data);
+function activity_stream_items_fetch(int $uid, string $service, mixed $data): array {
+  $items = \Drupal::moduleHandler()->invokeAll('activity_stream_' . $service . '_items_fetch', [$uid, $data]);
+  \Drupal::moduleHandler()->alter('activity_stream_' . $service . '_items', $items, $uid, $data);
   return $items;
 }
 
 /**
- * Loads activitystream_item entities, optionally filtered by user.
+ * Loads activity_stream_item entities, optionally filtered by user.
  *
  * @param int|null $uid
  *   The user ID to filter by, or NULL for all users.
  * @param int $count
  *   The number of items to load per page.
  *
- * @return \Drupal\activitystream\Entity\ActivityStreamItem[]
+ * @return \Drupal\activity_stream\Entity\ActivityStreamItem[]
  *   Array of ActivityStreamItem entities.
  */
-function activitystream_items_load(?int $uid = NULL, int $count = 20): array {
-  $query = \Drupal::entityQuery('activitystream_item')
+function activity_stream_items_load(?int $uid = NULL, int $count = 20): array {
+  $query = \Drupal::entityQuery('activity_stream_item')
     ->condition('status', 1)
     ->sort('created', 'DESC')
     ->pager($count)
@@ -259,11 +259,11 @@ function activitystream_items_load(?int $uid = NULL, int $count = 20): array {
   if (empty($ids)) {
     return [];
   }
-  return \Drupal::entityTypeManager()->getStorage('activitystream_item')->loadMultiple($ids);
+  return \Drupal::entityTypeManager()->getStorage('activity_stream_item')->loadMultiple($ids);
 }
 
 /**
- * Saves an array of fetched items as activitystream_item entities.
+ * Saves an array of fetched items as activity_stream_item entities.
  *
  * Skips items that already exist and have not changed. Creates new entities
  * for new items and updates changed existing items.
@@ -275,19 +275,19 @@ function activitystream_items_load(?int $uid = NULL, int $count = 20): array {
  * @param array $items
  *   Array of item arrays with keys: title, link, body, timestamp, guid, raw.
  */
-function activitystream_items_save(int $uid, string $service, array $items): void {
-  $storage = \Drupal::entityTypeManager()->getStorage('activitystream_item');
+function activity_stream_items_save(int $uid, string $service, array $items): void {
+  $storage = \Drupal::entityTypeManager()->getStorage('activity_stream_item');
   foreach ($items as $item) {
     $guid = !empty($item['guid']) ? $item['guid'] : $item['link'];
-    $existing_ids = \Drupal::entityQuery('activitystream_item')
-      ->condition('activitystream_guid', $guid)
+    $existing_ids = \Drupal::entityQuery('activity_stream_item')
+      ->condition('activity_stream_guid', $guid)
       ->condition('service', $service)
       ->condition('uid', $uid)
       ->accessCheck(FALSE)
       ->execute();
     if (!empty($existing_ids)) {
       $entity = $storage->load(reset($existing_ids));
-      if ($entity->label() === $item['title'] && $entity->get('activitystream_body')->value === $item['body']) {
+      if ($entity->label() === $item['title'] && $entity->get('activity_stream_body')->value === $item['body']) {
         continue;
       }
     }
@@ -296,10 +296,10 @@ function activitystream_items_save(int $uid, string $service, array $items): voi
     }
     $entity->set('title', $item['title']);
     $entity->set('created', $item['timestamp']);
-    $entity->set('activitystream_link', $item['link'] ?? '');
-    $entity->set('activitystream_guid', $guid);
-    $entity->set('activitystream_raw', $item['raw'] ?? '');
-    $entity->set('activitystream_body', $item['body'] ?? '');
+    $entity->set('activity_stream_link', $item['link'] ?? '');
+    $entity->set('activity_stream_guid', $guid);
+    $entity->set('activity_stream_raw', $item['raw'] ?? '');
+    $entity->set('activity_stream_body', $item['body'] ?? '');
     $entity->save();
   }
 }

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ruleset name="activitystream">
+<ruleset name="activity_stream">
   <description>Drupal coding standards for Activity Stream.</description>
   <file>src</file>
-  <file>activitystream.module</file>
-  <file>activitystream.install</file>
-  <file>activitystream_feed/activitystream_feed.module</file>
-  <file>activitystream_feed/activitystream_feed.install</file>
-  <file>activitystream_twitter/activitystream_twitter.module</file>
+  <file>activity_stream.module</file>
+  <file>activity_stream.install</file>
+  <file>activity_stream_feed/activity_stream_feed.module</file>
+  <file>activity_stream_feed/activity_stream_feed.install</file>
+  <file>activity_stream_twitter/activity_stream_twitter.module</file>
   <rule ref="Drupal"/>
   <rule ref="DrupalPractice"/>
   <!-- SimplePie is a vendored library, not subject to Drupal CS -->
-  <exclude-pattern>activitystream_feed/SimplePie.compiled.php</exclude-pattern>
+  <exclude-pattern>activity_stream_feed/SimplePie.compiled.php</exclude-pattern>
 </ruleset>

@@ -4,5 +4,5 @@ description: 'Import Twitter activity into a user Activity Stream. Note: require
 package: 'Activity Stream'
 core_version_requirement: ^10.3 || ^11
 dependencies:
-  - activitystream:activitystream
-  - activitystream:activitystream_feed
+  - activity_stream:activity_stream
+  - activity_stream:activity_stream_feed

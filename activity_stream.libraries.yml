@@ -1,0 +1,4 @@
+activity_stream:
+  css:
+    theme:
+      css/activity_stream.css: {}

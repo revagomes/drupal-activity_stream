@@ -1,0 +1,10 @@
+activity_stream.default_page:
+  title: 'Activity Stream'
+  route_name: activity_stream.default_page
+  menu_name: main
+
+activity_stream.admin_content:
+  title: 'Activity Stream'
+  description: 'Manage Activity Stream items.'
+  route_name: entity.activity_stream_item.collection
+  parent: system.admin_content

@@ -5,7 +5,7 @@
  * Hooks provided by the Activity Stream module.
  *
  * Activity Stream aggregates web activity from external services (RSS feeds,
- * social networks, etc.) into Drupal activitystream_item entities. Modules
+ * social networks, etc.) into Drupal activity_stream_item entities. Modules
  * can register new service types, configure per-user credentials, fetch
  * items from remote APIs, and alter the display of activity items.
  */
@@ -41,11 +41,11 @@ use Drupal\user\UserInterface;
  *     Obtain this path via the module extension list service so the path
  *     remains correct regardless of Drupal installation subdirectory.
  *
- * @see activitystream_services_load()
- * @see hook_activitystream_SERVICE_items_fetch()
+ * @see activity_stream_services_load()
+ * @see hook_activity_stream_SERVICE_items_fetch()
  *
  * @code
- * function mymodule_activitystream_services(): array {
+ * function mymodule_activity_stream_services(): array {
  *   $module_path = \Drupal::service('extension.list.module')
  *     ->getPath('mymodule');
  *
@@ -66,7 +66,7 @@ use Drupal\user\UserInterface;
  * }
  * @endcode
  */
-function hook_activitystream_services(): array {
+function hook_activity_stream_services(): array {
   $module_path = \Drupal::service('extension.list.module')
     ->getPath('mymodule');
 
@@ -81,7 +81,7 @@ function hook_activitystream_services(): array {
 }
 
 /**
- * Adds per-user configuration fields to the activitystream accounts form.
+ * Adds per-user configuration fields to the activity_stream accounts form.
  *
  * The accounts form is displayed at /user/{uid}/activity-stream/accounts and
  * allows each user to connect their external service credentials. Use this
@@ -90,7 +90,7 @@ function hook_activitystream_services(): array {
  *
  * To persist the submitted values, attach a custom submit handler via
  * $form['#submit']. Inside the handler, retrieve the values from
- * $form_state->getValues() and save them with activitystream_account_save().
+ * $form_state->getValues() and save them with activity_stream_account_save().
  *
  * @param array $form
  *   The form array. $form['#user'] contains the UserInterface object for the
@@ -98,11 +98,11 @@ function hook_activitystream_services(): array {
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The current form state.
  *
- * @see activitystream_account_load()
- * @see activitystream_account_save()
+ * @see activity_stream_account_load()
+ * @see activity_stream_account_save()
  *
  * @code
- * function mymodule_form_activitystream_accounts_form_alter(
+ * function mymodule_form_activity_stream_accounts_form_alter(
  *   array &$form,
  *   FormStateInterface $form_state,
  * ): void {
@@ -111,7 +111,7 @@ function hook_activitystream_services(): array {
  *   $uid  = $user instanceof UserInterface ? (int) $user->id() : NULL;
  *
  *   // Load previously saved credentials for this user.
- *   $defaults = activitystream_account_load('myservice', $uid) ?? [];
+ *   $defaults = activity_stream_account_load('myservice', $uid) ?? [];
  *
  *   $form['myservice'] = [
  *     '#type'        => 'details',
@@ -134,10 +134,10 @@ function hook_activitystream_services(): array {
  *   ];
  *
  *   // Attach a submit handler that runs before the form is saved.
- *   $form['#submit'][] = 'mymodule_activitystream_accounts_form_submit';
+ *   $form['#submit'][] = 'mymodule_activity_stream_accounts_form_submit';
  * }
  *
- * function mymodule_activitystream_accounts_form_submit(
+ * function mymodule_activity_stream_accounts_form_submit(
  *   array &$form,
  *   FormStateInterface $form_state,
  * ): void {
@@ -148,16 +148,16 @@ function hook_activitystream_services(): array {
  *   $values = $form_state->getValue('myservice', []);
  *
  *   // Preserve the existing API key if the field was left blank.
- *   $existing = activitystream_account_load('myservice', $uid) ?? [];
+ *   $existing = activity_stream_account_load('myservice', $uid) ?? [];
  *   if (empty($values['api_key'])) {
  *     $values['api_key'] = $existing['api_key'] ?? '';
  *   }
  *
- *   activitystream_account_save('myservice', $values, $uid);
+ *   activity_stream_account_save('myservice', $values, $uid);
  * }
  * @endcode
  */
-function hook_form_activitystream_accounts_form_alter(
+function hook_form_activity_stream_accounts_form_alter(
   array &$form,
   FormStateInterface $form_state,
 ): void {
@@ -165,7 +165,7 @@ function hook_form_activitystream_accounts_form_alter(
   $user = $form['#user'] ?? NULL;
   $uid  = $user instanceof UserInterface ? (int) $user->id() : NULL;
 
-  $defaults = activitystream_account_load('myservice', $uid) ?? [];
+  $defaults = activity_stream_account_load('myservice', $uid) ?? [];
 
   $form['myservice'] = [
     '#type'  => 'details',
@@ -180,16 +180,16 @@ function hook_form_activitystream_accounts_form_alter(
     '#default_value' => $defaults['username'] ?? '',
   ];
 
-  $form['#submit'][] = 'hook_form_activitystream_accounts_form_alter_submit';
+  $form['#submit'][] = 'hook_form_activity_stream_accounts_form_alter_submit';
 }
 
 /**
  * Fetches activity items for a specific service.
  *
  * Replace SERVICE in the hook name with the machine name of your service as
- * registered in hook_activitystream_services(). For example, a service with
+ * registered in hook_activity_stream_services(). For example, a service with
  * machine name "github" implements
- * hook_activitystream_github_items_fetch().
+ * hook_activity_stream_github_items_fetch().
  *
  * This hook is called during cron and on manual refresh. It should contact
  * the remote API and return an array of normalised item arrays.
@@ -205,31 +205,31 @@ function hook_form_activitystream_accounts_form_alter(
  *   provided by the remote service. Used for de-duplication. If the service
  *   does not provide a GUID, use the canonical link URL.
  * - raw (string, desired): The verbatim service response for this item
- *   (serialised JSON, XML, etc.) stored in the activitystream_raw field for
+ *   (serialised JSON, XML, etc.) stored in the activity_stream_raw field for
  *   archiving and future re-processing. Omitting this key is allowed but
  *   discouraged.
  *
  * If the service provides an RSS or Atom feed, you may delegate to
- * activitystream_feed_items_fetch() provided by the activitystream_feed
+ * activity_stream_feed_items_fetch() provided by the activity_stream_feed
  * sub-module instead of writing a custom HTTP client.
  *
  * @param int $uid
  *   The Drupal user ID for whom items are being fetched.
  * @param mixed $data
  *   The unserialized account data previously saved by
- *   activitystream_account_save() for this user and service. Typically an
+ *   activity_stream_account_save() for this user and service. Typically an
  *   associative array with credentials or configuration.
  *
  * @return array
  *   An indexed array of item arrays (see above). Return an empty array if
  *   there are no new items or if the credentials are missing/invalid.
  *
- * @see hook_activitystream_services()
- * @see hook_activitystream_SERVICE_items_alter()
- * @see activitystream_items_fetch()
+ * @see hook_activity_stream_services()
+ * @see hook_activity_stream_SERVICE_items_alter()
+ * @see activity_stream_items_fetch()
  *
  * @code
- * function mymodule_activitystream_myservice_items_fetch(
+ * function mymodule_activity_stream_myservice_items_fetch(
  *   int $uid,
  *   mixed $data,
  * ): array {
@@ -268,7 +268,7 @@ function hook_form_activitystream_accounts_form_alter(
  * }
  * @endcode
  */
-function hook_activitystream_SERVICE_items_fetch(int $uid, mixed $data): array {
+function hook_activity_stream_SERVICE_items_fetch(int $uid, mixed $data): array {
   return [
     [
       'title'     => 'Example activity item',
@@ -285,28 +285,28 @@ function hook_activitystream_SERVICE_items_fetch(int $uid, mixed $data): array {
  * Alters the list of items fetched for a specific service.
  *
  * Replace SERVICE in the hook name with the machine name of your service as
- * registered in hook_activitystream_services(). For example, a service with
+ * registered in hook_activity_stream_services(). For example, a service with
  * machine name "github" implements
- * hook_activitystream_github_items_alter().
+ * hook_activity_stream_github_items_alter().
  *
- * This hook runs after hook_activitystream_SERVICE_items_fetch() has been
+ * This hook runs after hook_activity_stream_SERVICE_items_fetch() has been
  * called on all implementing modules. Use it to filter, reorder, enrich, or
  * reformat items before they are saved as entities.
  *
  * @param array $items
  *   The indexed array of item arrays assembled by fetch hooks. Alter in place.
  *   Each item has the same structure documented in
- *   hook_activitystream_SERVICE_items_fetch().
+ *   hook_activity_stream_SERVICE_items_fetch().
  * @param int $uid
  *   The Drupal user ID for whom items are being processed.
  * @param mixed $data
  *   The unserialized account data for this user and service.
  *
- * @see hook_activitystream_SERVICE_items_fetch()
- * @see activitystream_items_fetch()
+ * @see hook_activity_stream_SERVICE_items_fetch()
+ * @see activity_stream_items_fetch()
  *
  * @code
- * function mymodule_activitystream_myservice_items_alter(
+ * function mymodule_activity_stream_myservice_items_alter(
  *   array &$items,
  *   int $uid,
  *   mixed $data,
@@ -316,7 +316,7 @@ function hook_activitystream_SERVICE_items_fetch(int $uid, mixed $data): array {
  *     $item['title'] = strip_tags($item['title']);
  *
  *     // Append a UTM parameter to track clicks.
- *     $item['link'] .= '?utm_source=drupal_activitystream';
+ *     $item['link'] .= '?utm_source=drupal_activity_stream';
  *   }
  *   unset($item);
  *
@@ -328,7 +328,7 @@ function hook_activitystream_SERVICE_items_fetch(int $uid, mixed $data): array {
  * }
  * @endcode
  */
-function hook_activitystream_SERVICE_items_alter(
+function hook_activity_stream_SERVICE_items_alter(
   array &$items,
   int $uid,
   mixed $data,
@@ -341,16 +341,16 @@ function hook_activitystream_SERVICE_items_alter(
 /**
  * Modifies template variables for an activity stream item before rendering.
  *
- * This hook runs during preprocessing of the activitystream_item template
- * (activitystream-item.html.twig). It is invoked after
- * template_preprocess_activitystream_item() has populated the default
+ * This hook runs during preprocessing of the activity_stream_item template
+ * (activity-stream-item.html.twig). It is invoked after
+ * template_preprocess_activity_stream_item() has populated the default
  * variables.
  *
  * Available variables in $variables:
- * - activitystream_item (\Drupal\activitystream\Entity\ActivityStreamItem):
+ * - activity_stream_item (\Drupal\activity_stream\Entity\ActivityStreamItem):
  *   The fully-loaded entity for the item being rendered.
  * - service (array): The service definition array as returned by
- *   hook_activitystream_services(). Contains keys: type, name, verb, icon.
+ *   hook_activity_stream_services(). Contains keys: type, name, verb, icon.
  * - statement (array): A render array describing the "Actor VERB Object"
  *   sentence. Contains three sub-keys:
  *   - actor: A render array for the username (theme: username).
@@ -364,12 +364,12 @@ function hook_activitystream_SERVICE_items_alter(
  * @param array $variables
  *   An associative array of template variables. Modify in place.
  *
- * @see template_preprocess_activitystream_item()
+ * @see template_preprocess_activity_stream_item()
  *
  * @code
- * function mymodule_preprocess_activitystream_item(array &$variables): void {
- *   /** @var \Drupal\activitystream\Entity\ActivityStreamItem $item *\/
- *   $item    = $variables['activitystream_item'];
+ * function mymodule_preprocess_activity_stream_item(array &$variables): void {
+ *   /** @var \Drupal\activity_stream\Entity\ActivityStreamItem $item *\/
+ *   $item    = $variables['activity_stream_item'];
  *   $service = $variables['service'];
  *
  *   // Override the verb with a service-specific label.
@@ -383,7 +383,7 @@ function hook_activitystream_SERVICE_items_alter(
  *   $variables['statement']['actor']['#attributes']['class'][] = 'myservice-actor';
  *
  *   // Expose the item's raw field value to the template for custom rendering.
- *   $raw = $item->get('activitystream_raw')->value;
+ *   $raw = $item->get('activity_stream_raw')->value;
  *   if (!empty($raw)) {
  *     $decoded = json_decode($raw, TRUE);
  *     $variables['myservice_cover_url'] = $decoded['cover_image_url'] ?? '';
@@ -391,9 +391,9 @@ function hook_activitystream_SERVICE_items_alter(
  * }
  * @endcode
  */
-function hook_preprocess_activitystream_item(array &$variables): void {
-  /** @var \Drupal\activitystream\Entity\ActivityStreamItem $item */
-  $item    = $variables['activitystream_item'];
+function hook_preprocess_activity_stream_item(array &$variables): void {
+  /** @var \Drupal\activity_stream\Entity\ActivityStreamItem $item */
+  $item    = $variables['activity_stream_item'];
   $service = $variables['service'];
 
   // Example: append the service name to the object link title.

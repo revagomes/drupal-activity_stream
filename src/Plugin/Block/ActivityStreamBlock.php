@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\activitystream\Plugin\Block;
+namespace Drupal\activity_stream\Plugin\Block;
 
 use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Provides a site-wide Activity Stream block.
  */
 #[Block(
-  id: 'activitystream_site_wide_block',
+  id: 'activity_stream_site_wide_block',
   admin_label: new TranslatableMarkup('Activity Stream (Site-wide)'),
   category: new TranslatableMarkup('Activity Stream'),
 )]
@@ -78,22 +78,22 @@ class ActivityStreamBlock extends BlockBase implements ContainerFactoryPluginInt
    * {@inheritdoc}
    */
   public function build(): array {
-    $items = activitystream_items_load(NULL, 10);
-    $services = activitystream_services_load();
+    $items = activity_stream_items_load(NULL, 10);
+    $services = activity_stream_services_load();
 
     $build = [];
 
     $build['items'] = [
-      '#prefix' => '<div id="activitystream-items">',
+      '#prefix' => '<div id="activity-stream-items">',
       '#suffix' => '</div>',
     ];
-    $build['items']['#attached']['library'][] = 'activitystream/activitystream';
+    $build['items']['#attached']['library'][] = 'activity_stream/activity_stream';
 
     foreach ($items as $item) {
       $service_id = $item->get('service')->value;
       $build['items'][$item->id()] = [
-        '#theme' => 'activitystream_item__' . $service_id,
-        '#activitystream_item' => $item,
+        '#theme' => 'activity_stream_item__' . $service_id,
+        '#activity_stream_item' => $item,
         '#service' => $services[$service_id] ?? [],
       ];
     }
@@ -107,8 +107,8 @@ class ActivityStreamBlock extends BlockBase implements ContainerFactoryPluginInt
     $build['more'] = [
       '#type' => 'link',
       '#title' => $this->t('See more'),
-      '#url' => Url::fromRoute('activitystream.default_page'),
-      '#attributes' => ['class' => ['activitystream-more-link']],
+      '#url' => Url::fromRoute('activity_stream.default_page'),
+      '#attributes' => ['class' => ['activity-stream-more-link']],
     ];
 
     return $build;

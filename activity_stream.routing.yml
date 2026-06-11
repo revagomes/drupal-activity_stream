@@ -1,16 +1,16 @@
-activitystream.default_page:
+activity_stream.default_page:
   path: '/activity-stream'
   defaults:
-    _controller: '\Drupal\activitystream\Controller\ActivityStreamController::defaultPage'
+    _controller: '\Drupal\activity_stream\Controller\ActivityStreamController::defaultPage'
     _title: 'Activity Stream'
   requirements:
     _permission: 'access content'
 
-activitystream.user_page:
+activity_stream.user_page:
   path: '/user/{user}/activity-stream'
   defaults:
-    _controller: '\Drupal\activitystream\Controller\ActivityStreamController::userPage'
-    _title_callback: '\Drupal\activitystream\Controller\ActivityStreamController::userPageTitle'
+    _controller: '\Drupal\activity_stream\Controller\ActivityStreamController::userPage'
+    _title_callback: '\Drupal\activity_stream\Controller\ActivityStreamController::userPageTitle'
   requirements:
     _permission: 'access content'
   options:
@@ -18,10 +18,10 @@ activitystream.user_page:
       user:
         type: entity:user
 
-activitystream.user_accounts:
+activity_stream.user_accounts:
   path: '/user/{user}/edit/activity-stream'
   defaults:
-    _form: '\Drupal\activitystream\Form\ActivityStreamAccountsForm'
+    _form: '\Drupal\activity_stream\Form\ActivityStreamAccountsForm'
     _title: 'Activity Stream accounts'
   requirements:
     _permission: 'access content'

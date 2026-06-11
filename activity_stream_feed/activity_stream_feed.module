@@ -9,10 +9,10 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Implements hook_activitystream_services().
+ * Implements hook_activity_stream_services().
  */
-function activitystream_feed_activitystream_services(): array {
-  $module_path = \Drupal::service('extension.list.module')->getPath('activitystream_feed');
+function activity_stream_feed_activity_stream_services(): array {
+  $module_path = \Drupal::service('extension.list.module')->getPath('activity_stream_feed');
   return [
     'feed' => [
       'type' => 'feed',
@@ -24,48 +24,48 @@ function activitystream_feed_activitystream_services(): array {
 }
 
 /**
- * Implements hook_form_activitystream_accounts_form_alter().
+ * Implements hook_form_activity_stream_accounts_form_alter().
  */
-function activitystream_feed_form_activitystream_accounts_form_alter(array &$form, FormStateInterface $form_state): void {
+function activity_stream_feed_form_activity_stream_accounts_form_alter(array &$form, FormStateInterface $form_state): void {
   $user = $form['#user'];
   $uid = $user ? $user->id() : \Drupal::currentUser()->id();
-  $feed_urls = activitystream_account_load('feed', $uid);
+  $feed_urls = activity_stream_account_load('feed', $uid);
   $feed_urls_string = is_array($feed_urls) ? implode("\n", $feed_urls) : '';
 
-  $form['activitystream_feed'] = [
+  $form['activity_stream_feed'] = [
     '#type' => 'fieldset',
     '#title' => t('Feed'),
   ];
-  $form['activitystream_feed']['activitystream_feed_urls'] = [
+  $form['activity_stream_feed']['activity_stream_feed_urls'] = [
     '#type' => 'textarea',
     '#title' => t('Feed URLs'),
     '#description' => t('Multiple RSS or Atom feeds are allowed; place each on a separate line.'),
     '#default_value' => $feed_urls_string,
   ];
 
-  $form['#submit'][] = 'activitystream_feed_form_activitystream_accounts_form_submit';
+  $form['#submit'][] = 'activity_stream_feed_form_activity_stream_accounts_form_submit';
 }
 
 /**
  * Form submit handler for Activity Stream feed account configuration.
  */
-function activitystream_feed_form_activitystream_accounts_form_submit(array &$form, FormStateInterface $form_state): void {
+function activity_stream_feed_form_activity_stream_accounts_form_submit(array &$form, FormStateInterface $form_state): void {
   $user = $form['#user'];
   $uid = $user ? $user->id() : \Drupal::currentUser()->id();
-  $urls_value = $form_state->getValue('activitystream_feed_urls');
+  $urls_value = $form_state->getValue('activity_stream_feed_urls');
   if (!empty($urls_value)) {
     $feed_urls = array_filter(array_map('trim', explode("\n", str_replace('feed://', 'http://', $urls_value))));
-    activitystream_account_save('feed', $feed_urls, $uid);
+    activity_stream_account_save('feed', $feed_urls, $uid);
   }
   else {
-    activitystream_account_delete('feed', $uid);
+    activity_stream_account_delete('feed', $uid);
   }
 }
 
 /**
- * Implements hook_activitystream_feed_items_fetch().
+ * Implements hook_activity_stream_feed_items_fetch().
  */
-function activitystream_feed_activitystream_feed_items_fetch(int $uid, mixed $feed_urls): array {
+function activity_stream_feed_activity_stream_feed_items_fetch(int $uid, mixed $feed_urls): array {
   $feed_urls = is_array($feed_urls) ? $feed_urls : [$feed_urls];
   require_once __DIR__ . '/SimplePie.compiled.php';
 
@@ -85,7 +85,7 @@ function activitystream_feed_activitystream_feed_items_fetch(int $uid, mixed $fe
     $feed->set_feed_url($feed_url);
 
     if (!$feed->init()) {
-      \Drupal::logger('activitystream_feed')->error('Feed fetch error for @url: @error', [
+      \Drupal::logger('activity_stream_feed')->error('Feed fetch error for @url: @error', [
         '@url' => $feed_url,
         '@error' => $feed->error(),
       ]);
@@ -109,8 +109,8 @@ function activitystream_feed_activitystream_feed_items_fetch(int $uid, mixed $fe
 }
 
 /**
- * Shorthand wrapper for activitystream_feed_activitystream_feed_items_fetch().
+ * Shorthand wrapper for activity_stream_feed_activity_stream_feed_items_fetch().
  */
-function activitystream_feed_items_fetch(int $uid, mixed $feed_urls): array {
-  return activitystream_feed_activitystream_feed_items_fetch($uid, $feed_urls);
+function activity_stream_feed_items_fetch(int $uid, mixed $feed_urls): array {
+  return activity_stream_feed_activity_stream_feed_items_fetch($uid, $feed_urls);
 }

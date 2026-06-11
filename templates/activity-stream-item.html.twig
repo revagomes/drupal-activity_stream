@@ -4,7 +4,7 @@
  * Theme for an Activity Stream item.
  *
  * Variables:
- * - activitystream_item: The ActivityStreamItem entity.
+ * - activity_stream_item: The ActivityStreamItem entity.
  * - service: Array of service info (name, verb, icon, type).
  * - statement: Renderable array with actor, verb, object keys.
  * - service_icon: Renderable service icon.
@@ -13,16 +13,16 @@
  * - time_ago: Renderable time string.
  */
 #}
-<div class="activitystream-item">
-  <div class="activitystream-item-service">
+<div class="activity-stream-item">
+  <div class="activity-stream-item-service">
     {{ service_icon }}
   </div>
-  <ul class="activitystream-item-meta meta">
+  <ul class="activity-stream-item-meta meta">
     <li>{{ time_ago }}</li>
     <li>{{ permalink_icon }}</li>
     <li>{{ external_icon }}</li>
   </ul>
-  <div class="activitystream-item-statement">
+  <div class="activity-stream-item-statement">
     {{ statement }}
   </div>
 </div>

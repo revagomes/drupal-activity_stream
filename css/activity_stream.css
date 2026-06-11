@@ -1,0 +1,42 @@
+
+.activity-stream-item {
+  clear: both;
+  padding: 0.4em;
+}
+
+.activity-stream-item .activity-stream-item-service {
+  float: left;
+}
+
+.activity-stream-item .activity-stream-item-service img {
+  height: 24px;
+  width: 24px;
+}
+
+.activity-stream-item ul.activity-stream-item-meta {
+  float: right;
+  font-size: smaller;
+  list-style-type: none;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.activity-stream-item ul.activity-stream-item-meta li {
+  float: left;
+  margin-right: 0.6em;
+}
+
+.activity-stream-item ul.activity-stream-item-meta img {
+  height: 12px;
+  width: 12px;
+  vertical-align: middle;
+}
+
+.activity-stream-item .activity-stream-item-statement {
+  margin-left: 40px;
+  margin-right: 130px;
+}
+
+#block-activity-stream-activity-stream-site-wide-block .activity-stream-see-more {
+  text-align: right;
+}

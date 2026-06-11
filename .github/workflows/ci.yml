@@ -26,7 +26,7 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: PHP lint
-        run: find src activitystream.module activitystream.install activitystream_feed/activitystream_feed.module activitystream_twitter/activitystream_twitter.module -name '*.php' -exec php -l {} \;
+        run: find src activity_stream.module activity_stream.install activity_stream_feed/activity_stream_feed.module activity_stream_twitter/activity_stream_twitter.module -name '*.php' -exec php -l {} \;
 
       - name: PHPCS
         run: vendor/bin/phpcs --standard=phpcs.xml.dist

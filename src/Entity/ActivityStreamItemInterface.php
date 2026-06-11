@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\activitystream\Entity;
+namespace Drupal\activity_stream\Entity;
 
 use Drupal\Core\Entity\ContentEntityInterface;
 
