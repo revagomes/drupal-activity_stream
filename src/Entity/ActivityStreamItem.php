@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\activity_stream\Entity;
+namespace Drupal\actstream\Entity;
 
 use Drupal\Core\Entity\Attribute\ContentEntityType;
 use Drupal\Core\Entity\ContentEntityBase;
@@ -10,20 +10,20 @@ use Drupal\Core\Entity\EntityViewBuilder;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\activity_stream\ActivityStreamItemAccessControlHandler;
-use Drupal\activity_stream\ActivityStreamItemListBuilder;
-use Drupal\activity_stream\Form\ActivityStreamItemForm;
+use Drupal\actstream\ActivityStreamItemAccessControlHandler;
+use Drupal\actstream\ActivityStreamItemListBuilder;
+use Drupal\actstream\Form\ActivityStreamItemForm;
 
 /**
  * Defines the Activity Stream item entity type.
  */
 #[ContentEntityType(
-  id: 'activity_stream_item',
+  id: 'actstream_item',
   label: new TranslatableMarkup('Activity Stream item'),
   label_singular: new TranslatableMarkup('activity stream item'),
   label_plural: new TranslatableMarkup('Activity Stream items'),
   label_collection: new TranslatableMarkup('Activity Stream items'),
-  base_table: 'activity_stream_item',
+  base_table: 'actstream_item',
   entity_keys: [
     'id' => 'id',
     'label' => 'title',
@@ -43,12 +43,12 @@ use Drupal\activity_stream\Form\ActivityStreamItemForm;
     'access' => ActivityStreamItemAccessControlHandler::class,
   ],
   links: [
-    'canonical' => '/activity_stream/{activity_stream_item}',
-    'edit-form' => '/activity_stream/{activity_stream_item}/edit',
-    'delete-form' => '/activity_stream/{activity_stream_item}/delete',
-    'collection' => '/admin/content/activity_stream',
+    'canonical' => '/actstream/{actstream_item}',
+    'edit-form' => '/actstream/{actstream_item}/edit',
+    'delete-form' => '/actstream/{actstream_item}/delete',
+    'collection' => '/admin/content/actstream',
   ],
-  admin_permission: 'administer activity_stream',
+  admin_permission: 'administer actstream',
 )]
 class ActivityStreamItem extends ContentEntityBase implements ActivityStreamItemInterface {
 
@@ -63,14 +63,14 @@ class ActivityStreamItem extends ContentEntityBase implements ActivityStreamItem
    * {@inheritdoc}
    */
   public function getLink(): string {
-    return (string) $this->get('activity_stream_link')->value;
+    return (string) $this->get('actstream_link')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getGuid(): string {
-    return (string) $this->get('activity_stream_guid')->value;
+    return (string) $this->get('actstream_guid')->value;
   }
 
   /**
@@ -194,7 +194,7 @@ class ActivityStreamItem extends ContentEntityBase implements ActivityStreamItem
       ->setLabel(new TranslatableMarkup('Changed'));
 
     // External link URL.
-    $fields['activity_stream_link'] = BaseFieldDefinition::create('uri')
+    $fields['actstream_link'] = BaseFieldDefinition::create('uri')
       ->setLabel(new TranslatableMarkup('Link'))
       ->setDescription(new TranslatableMarkup('External URL of the original item.'))
       ->setSetting('max_length', 2048)
@@ -211,7 +211,7 @@ class ActivityStreamItem extends ContentEntityBase implements ActivityStreamItem
       ->setDisplayConfigurable('form', TRUE);
 
     // Globally unique identifier.
-    $fields['activity_stream_guid'] = BaseFieldDefinition::create('string')
+    $fields['actstream_guid'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('GUID'))
       ->setDescription(new TranslatableMarkup('Globally unique identifier.'))
       ->setSetting('max_length', 2048)
@@ -228,7 +228,7 @@ class ActivityStreamItem extends ContentEntityBase implements ActivityStreamItem
       ->setDisplayConfigurable('form', TRUE);
 
     // Raw service response.
-    $fields['activity_stream_raw'] = BaseFieldDefinition::create('string_long')
+    $fields['actstream_raw'] = BaseFieldDefinition::create('string_long')
       ->setLabel(new TranslatableMarkup('Raw data'))
       ->setDescription(new TranslatableMarkup('Raw service response.'))
       ->setDisplayOptions('form', [
@@ -239,7 +239,7 @@ class ActivityStreamItem extends ContentEntityBase implements ActivityStreamItem
       ->setDisplayConfigurable('view', FALSE);
 
     // Body content.
-    $fields['activity_stream_body'] = BaseFieldDefinition::create('text_long')
+    $fields['actstream_body'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Body'))
       ->setDescription(new TranslatableMarkup('Content of the activity item.'))
       ->setDisplayOptions('view', [

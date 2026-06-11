@@ -1,8 +1,8 @@
 <?php
 
-namespace Drupal\activity_stream\Controller;
+namespace Drupal\actstream\Controller;
 
-use Drupal\activity_stream\Entity\ActivityStreamItem;
+use Drupal\actstream\Entity\ActivityStreamItem;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\user\UserInterface;
 
@@ -18,8 +18,8 @@ class ActivityStreamController extends ControllerBase {
    *   A render array.
    */
   public function defaultPage(): array {
-    $items = activity_stream_items_load(NULL);
-    $services = activity_stream_services_load();
+    $items = actstream_items_load(NULL);
+    $services = actstream_services_load();
     return $this->buildItemList($items, $services);
   }
 
@@ -33,8 +33,8 @@ class ActivityStreamController extends ControllerBase {
    *   A render array.
    */
   public function userPage(UserInterface $user): array {
-    $items = activity_stream_items_load((int) $user->id());
-    $services = activity_stream_services_load();
+    $items = actstream_items_load((int) $user->id());
+    $services = actstream_services_load();
     return $this->buildItemList($items, $services);
   }
 
@@ -52,24 +52,24 @@ class ActivityStreamController extends ControllerBase {
   }
 
   /**
-   * Returns a render array for a single activity_stream_item entity.
+   * Returns a render array for a single actstream_item entity.
    *
-   * @param \Drupal\activity_stream\Entity\ActivityStreamItem $activity_stream_item
+   * @param \Drupal\actstream\Entity\ActivityStreamItem $actstream_item
    *   The activity stream item entity.
    *
    * @return array
    *   A render array.
    */
-  public function view(ActivityStreamItem $activity_stream_item): array {
+  public function view(ActivityStreamItem $actstream_item): array {
     return $this->entityTypeManager()
-      ->getViewBuilder('activity_stream_item')
-      ->view($activity_stream_item);
+      ->getViewBuilder('actstream_item')
+      ->view($actstream_item);
   }
 
   /**
-   * Builds a render array for a list of activity_stream_item entities.
+   * Builds a render array for a list of actstream_item entities.
    *
-   * @param \Drupal\activity_stream\Entity\ActivityStreamItem[] $items
+   * @param \Drupal\actstream\Entity\ActivityStreamItem[] $items
    *   The items to render.
    * @param array $services
    *   The registered service definitions.
@@ -81,16 +81,16 @@ class ActivityStreamController extends ControllerBase {
     $build = [];
 
     $build['items'] = [
-      '#prefix' => '<div id="activity-stream-items">',
+      '#prefix' => '<div id="actstream-items">',
       '#suffix' => '</div>',
     ];
-    $build['items']['#attached']['library'][] = 'activity_stream/activity_stream';
+    $build['items']['#attached']['library'][] = 'actstream/actstream';
 
     foreach ($items as $item) {
       $service_id = $item->get('service')->value;
       $build['items'][$item->id()] = [
-        '#theme' => 'activity_stream_item__' . $service_id,
-        '#activity_stream_item' => $item,
+        '#theme' => 'actstream_item__' . $service_id,
+        '#actstream_item' => $item,
         '#service' => $services[$service_id] ?? [],
       ];
     }

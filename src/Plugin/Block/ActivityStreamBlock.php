@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\activity_stream\Plugin\Block;
+namespace Drupal\actstream\Plugin\Block;
 
 use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Provides a site-wide Activity Stream block.
  */
 #[Block(
-  id: 'activity_stream_site_wide_block',
+  id: 'actstream_site_wide_block',
   admin_label: new TranslatableMarkup('Activity Stream (Site-wide)'),
   category: new TranslatableMarkup('Activity Stream'),
 )]
@@ -78,22 +78,22 @@ class ActivityStreamBlock extends BlockBase implements ContainerFactoryPluginInt
    * {@inheritdoc}
    */
   public function build(): array {
-    $items = activity_stream_items_load(NULL, 10);
-    $services = activity_stream_services_load();
+    $items = actstream_items_load(NULL, 10);
+    $services = actstream_services_load();
 
     $build = [];
 
     $build['items'] = [
-      '#prefix' => '<div id="activity-stream-items">',
+      '#prefix' => '<div id="actstream-items">',
       '#suffix' => '</div>',
     ];
-    $build['items']['#attached']['library'][] = 'activity_stream/activity_stream';
+    $build['items']['#attached']['library'][] = 'actstream/actstream';
 
     foreach ($items as $item) {
       $service_id = $item->get('service')->value;
       $build['items'][$item->id()] = [
-        '#theme' => 'activity_stream_item__' . $service_id,
-        '#activity_stream_item' => $item,
+        '#theme' => 'actstream_item__' . $service_id,
+        '#actstream_item' => $item,
         '#service' => $services[$service_id] ?? [],
       ];
     }
@@ -107,8 +107,8 @@ class ActivityStreamBlock extends BlockBase implements ContainerFactoryPluginInt
     $build['more'] = [
       '#type' => 'link',
       '#title' => $this->t('See more'),
-      '#url' => Url::fromRoute('activity_stream.default_page'),
-      '#attributes' => ['class' => ['activity-stream-more-link']],
+      '#url' => Url::fromRoute('actstream.default_page'),
+      '#attributes' => ['class' => ['actstream-more-link']],
     ];
 
     return $build;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\activity_stream\Form;
+namespace Drupal\actstream\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -9,7 +9,7 @@ use Drupal\user\UserInterface;
 /**
  * Per-user activity stream accounts configuration form.
  *
- * Sub-modules add fields via hook_form_activity_stream_accounts_form_alter().
+ * Sub-modules add fields via hook_form_actstream_accounts_form_alter().
  * The $form['#user'] property is set so those implementations can access it.
  */
 class ActivityStreamAccountsForm extends FormBase {
@@ -18,7 +18,7 @@ class ActivityStreamAccountsForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId(): string {
-    return 'activity_stream_accounts_form';
+    return 'actstream_accounts_form';
   }
 
   /**
@@ -29,7 +29,7 @@ class ActivityStreamAccountsForm extends FormBase {
     // via $form['#user'] — matching the D7 API contract.
     $form['#user'] = $user;
 
-    $form['#attached']['library'][] = 'activity_stream/activity_stream';
+    $form['#attached']['library'][] = 'actstream/actstream';
 
     $form['actions'] = ['#type' => 'actions'];
     $form['actions']['submit'] = [

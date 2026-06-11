@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\activity_stream;
+namespace Drupal\actstream;
 
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -65,7 +65,7 @@ class ActivityStreamItemListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity): array {
-    /** @var \Drupal\activity_stream\Entity\ActivityStreamItemInterface $entity */
+    /** @var \Drupal\actstream\Entity\ActivityStreamItemInterface $entity */
     $row['id'] = $entity->id();
     $row['title'] = Link::fromTextAndUrl($entity->label(), $entity->toUrl());
     $row['service'] = $entity->getService();

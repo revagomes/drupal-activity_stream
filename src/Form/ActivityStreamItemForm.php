@@ -1,12 +1,12 @@
 <?php
 
-namespace Drupal\activity_stream\Form;
+namespace Drupal\actstream\Form;
 
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Form handler for the activity_stream_item entity edit form.
+ * Form handler for the actstream_item entity edit form.
  */
 class ActivityStreamItemForm extends ContentEntityForm {
 

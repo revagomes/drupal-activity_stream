@@ -1,9 +1,9 @@
 {
-  "name": "drupal/activity_stream_entity",
+  "name": "drupal/actstream",
   "description": "Aggregates your web activity from external services (RSS, etc.) into Drupal activity stream entities.",
   "type": "drupal-module",
   "license": "GPL-2.0-or-later",
-  "homepage": "https://www.drupal.org/sandbox/revagomes/activity_stream_entity",
+  "homepage": "https://www.drupal.org/sandbox/revagomes/actstream_entity",
   "authors": [
     {
       "name": "Reva Gomes",
@@ -12,7 +12,7 @@
     }
   ],
   "support": {
-    "issues": "https://www.drupal.org/project/issues/activity_stream_entity",
+    "issues": "https://www.drupal.org/project/issues/actstream_entity",
     "source": "https://git.drupal.org/sandbox/revagomes-2216775.git"
   },
   "require": {
