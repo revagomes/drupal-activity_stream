@@ -1,6 +1,6 @@
 # Activity Stream
 
-[![CI](https://github.com/revagomes/drupal-activity_stream_entity/actions/workflows/ci.yml/badge.svg?branch=2.0.x)](https://github.com/revagomes/drupal-activity_stream_entity/actions/workflows/ci.yml)
+[![CI](https://github.com/revagomes/drupal-activity_stream/actions/workflows/ci.yml/badge.svg?branch=2.0.x)](https://github.com/revagomes/drupal-activity_stream/actions/workflows/ci.yml)
 [![Drupal 10.3+/11](https://img.shields.io/badge/Drupal-10.3%2B%20%7C%2011-0678BE.svg)](https://www.drupal.org/project/activity_stream_entity)
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL--2.0--or--later-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
 
@@ -109,7 +109,7 @@ CI runs on every push and pull request against `2.0.x` via [GitHub Actions](.git
 
 - Drupal.org project page: <https://www.drupal.org/sandbox/revagomes/activity_stream_entity>
 - Issue queue: <https://www.drupal.org/project/issues/activity_stream_entity>
-- GitHub mirror: <https://github.com/revagomes/drupal-activity_stream_entity>
+- GitHub mirror: <https://github.com/revagomes/drupal-activity_stream>
 
 ---
 
