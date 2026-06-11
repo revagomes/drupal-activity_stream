@@ -9,8 +9,8 @@ use Drupal\user\UserInterface;
 /**
  * Per-user activity stream accounts configuration form.
  *
- * Sub-modules add their fields via hook_form_activity_stream_accounts_form_alter().
- * The $form['#user'] property is set here so those implementations can access it.
+ * Sub-modules add fields via hook_form_activity_stream_accounts_form_alter().
+ * The $form['#user'] property is set so those implementations can access it.
  */
 class ActivityStreamAccountsForm extends FormBase {
 
