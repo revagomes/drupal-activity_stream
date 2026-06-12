@@ -1,0 +1,14 @@
+include:
+  - project: $_GITLAB_TEMPLATES_REPO
+    ref: $_GITLAB_TEMPLATES_REF
+    file:
+      - /includes/include.drupalci.main.yml
+      - /includes/include.drupalci.variables.yml
+      - /includes/include.drupalci.junit-xml.yml
+
+variables:
+  _TARGET_PHP: "8.2"
+  _TARGET_CORE: "11.x"
+  _PHPCS_DRUPAL_STANDARD: "Drupal,DrupalPractice"
+  _PHPCS_EXTENSIONS: "php,module,install,inc"
+  _PHPCS_IGNORE_ANNOTATIONS: "0"
