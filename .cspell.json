@@ -1,0 +1,27 @@
+{
+  "version": "0.2",
+  "ignorePaths": [
+    "actstream_feed/SimplePie.compiled.php"
+  ],
+  "words": [
+    "actstream",
+    "simplepie",
+    "SimplePie",
+    "lifestream",
+    "Storytlr",
+    "langcode",
+    "drush",
+    "phpcs",
+    "phpstan",
+    "PHPCS",
+    "gettext",
+    "preprocess",
+    "presave",
+    "guid",
+    "GUID",
+    "Drupal",
+    "drupal",
+    "Packagist",
+    "revagomes"
+  ]
+}
