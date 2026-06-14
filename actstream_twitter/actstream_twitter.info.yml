@@ -1,8 +1,7 @@
-name: 'Activity Stream Twitter'
+name: 'Activity Stream — X (Twitter)'
 type: module
-description: 'Import Twitter activity into a user Activity Stream. Note: requires update for Twitter API v2.'
+description: 'Fetches recent X (Twitter) posts into the Activity Stream via the X API v2 app-only Bearer token.'
 package: 'Activity Stream'
 core_version_requirement: ^10.3 || ^11
 dependencies:
   - actstream:actstream
-  - actstream:actstream_feed

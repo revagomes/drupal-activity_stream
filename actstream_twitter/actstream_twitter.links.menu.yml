@@ -1,0 +1,5 @@
+actstream_twitter.settings:
+  title: 'Activity Stream X (Twitter)'
+  route_name: actstream_twitter.settings
+  parent: system.admin_config_services
+  description: 'Configure the X (Twitter) Bearer token for Activity Stream.'

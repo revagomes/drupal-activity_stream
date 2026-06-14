@@ -1,0 +1,7 @@
+actstream_twitter.settings:
+  path: '/admin/config/services/actstream/twitter'
+  defaults:
+    _form: '\Drupal\actstream_twitter\Form\SettingsForm'
+    _title: 'Activity Stream X (Twitter) settings'
+  requirements:
+    _permission: 'administer site configuration'

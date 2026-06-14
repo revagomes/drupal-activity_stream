@@ -1,0 +1,7 @@
+actstream_twitter.settings:
+  type: config_object
+  label: 'Activity Stream X (Twitter) settings'
+  mapping:
+    bearer_token:
+      type: string
+      label: 'X (Twitter) Bearer token'

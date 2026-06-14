@@ -33,6 +33,10 @@
     "lastfm",
     "scrobbler",
     "audioscrobbler",
-    "nowplaying"
+    "nowplaying",
+    "tweeted",
+    "retweets",
+    "rawurlencode",
+    "DateTimeImmutable"
   ]
 }
