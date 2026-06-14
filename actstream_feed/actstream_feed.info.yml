@@ -4,4 +4,4 @@ description: 'Import RSS and Atom feeds into a user Activity Stream.'
 package: 'Activity Stream'
 core_version_requirement: ^10.3 || ^11
 dependencies:
-  - activity_stream:activity_stream
+  - actstream:actstream

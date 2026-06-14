@@ -1,17 +1,17 @@
-activity_stream.user_page:
+actstream.user_page:
   title: 'Activity Stream'
-  route_name: activity_stream.user_page
+  route_name: actstream.user_page
   route_parameters:
     user: user
   base_route: entity.user.canonical
   weight: 10
 
-entity.activity_stream_item.canonical:
+entity.actstream_item.canonical:
   title: 'View'
-  route_name: entity.activity_stream_item.canonical
-  base_route: entity.activity_stream_item.canonical
+  route_name: entity.actstream_item.canonical
+  base_route: entity.actstream_item.canonical
 
-entity.activity_stream_item.edit_form:
+entity.actstream_item.edit_form:
   title: 'Edit'
-  route_name: entity.activity_stream_item.edit_form
-  base_route: entity.activity_stream_item.canonical
+  route_name: entity.actstream_item.edit_form
+  base_route: entity.actstream_item.canonical

@@ -2,5 +2,5 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the activity_stream_feed module.
+ * Install, update and uninstall functions for the actstream_feed module.
  */

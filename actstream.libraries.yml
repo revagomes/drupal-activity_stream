@@ -1,4 +1,4 @@
-activity_stream:
+actstream:
   css:
     theme:
-      css/activity_stream.css: {}
+      css/actstream.css: {}
