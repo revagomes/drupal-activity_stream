@@ -1,0 +1,7 @@
+actstream_flickr.settings:
+  path: '/admin/config/services/actstream/flickr'
+  defaults:
+    _form: '\Drupal\actstream_flickr\Form\SettingsForm'
+    _title: 'Activity Stream Flickr settings'
+  requirements:
+    _permission: 'administer site configuration'

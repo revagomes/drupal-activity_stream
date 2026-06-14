@@ -1,0 +1,7 @@
+actstream_flickr.settings:
+  type: config_object
+  label: 'Activity Stream Flickr settings'
+  mapping:
+    api_key:
+      type: string
+      label: 'Flickr API key'

@@ -1,0 +1,7 @@
+name: 'Activity Stream — Last.fm'
+type: module
+description: 'Fetches Last.fm recent tracks into the Activity Stream via the Last.fm API v2.'
+package: 'Activity Stream'
+core_version_requirement: '^10.3 || ^11'
+dependencies:
+  - actstream:actstream

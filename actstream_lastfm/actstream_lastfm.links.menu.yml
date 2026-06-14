@@ -1,0 +1,5 @@
+actstream_lastfm.settings:
+  title: 'Activity Stream Last.fm'
+  route_name: actstream_lastfm.settings
+  parent: system.admin_config_services
+  description: 'Configure the Last.fm API key for Activity Stream.'

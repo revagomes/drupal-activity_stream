@@ -1,0 +1,7 @@
+actstream_lastfm.settings:
+  path: '/admin/config/services/actstream/lastfm'
+  defaults:
+    _form: '\Drupal\actstream_lastfm\Form\SettingsForm'
+    _title: 'Activity Stream Last.fm settings'
+  requirements:
+    _permission: 'administer site configuration'

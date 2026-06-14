@@ -1,0 +1,5 @@
+actstream_flickr.settings:
+  title: 'Activity Stream Flickr'
+  route_name: actstream_flickr.settings
+  parent: system.admin_config_services
+  description: 'Configure the Flickr API key for Activity Stream.'

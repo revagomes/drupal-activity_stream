@@ -1,0 +1,7 @@
+name: 'Activity Stream — Flickr'
+type: module
+description: 'Fetches public Flickr photos into the Activity Stream via the Flickr API.'
+package: 'Activity Stream'
+core_version_requirement: '^10.3 || ^11'
+dependencies:
+  - actstream:actstream

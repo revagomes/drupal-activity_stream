@@ -19,6 +19,9 @@
     "php": "^8.1",
     "drupal/core": "^10.3 || ^11"
   },
+  "suggest": {
+    "samwilson/phpflickr": "^5 — required by the actstream_flickr sub-module"
+  },
   "require-dev": {
     "drupal/coder": "^8.3",
     "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
