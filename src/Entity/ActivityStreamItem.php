@@ -253,6 +253,20 @@ class ActivityStreamItem extends ContentEntityBase implements ActivityStreamItem
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
+    // Event wall identifier — set for items ingested by actstream_event cron.
+    $fields['actstream_event_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(new TranslatableMarkup('Event ID'))
+      ->setDescription(new TranslatableMarkup('Machine name of the owning event. Empty for user stream items.'))
+      ->setSetting('max_length', 255)
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'string',
+        'weight' => 35,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', FALSE);
+
     return $fields;
   }
 
