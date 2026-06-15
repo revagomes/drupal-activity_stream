@@ -1,0 +1,5 @@
+actstream_instagram_search.settings:
+  title: 'Instagram Hashtag Search'
+  description: 'Configure Meta Graph API credentials for Instagram hashtag search.'
+  parent: system.admin_config_services
+  route_name: actstream_instagram_search.settings

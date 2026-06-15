@@ -1,0 +1,101 @@
+<?php
+
+/**
+ * @file
+ * Fetches Instagram posts matching a hashtag via the Meta Graph API.
+ */
+
+/**
+ * Implements hook_actstream_services().
+ */
+function actstream_instagram_search_actstream_services(): array {
+  return [
+    'instagram_search' => [
+      'type' => 'instagram_search',
+      'name' => t('Instagram Hashtag'),
+      'verb' => t('posted'),
+      'icon' => 'https://www.instagram.com/favicon.ico',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_actstream_instagram_search_items_fetch().
+ *
+ * Two-step: resolve hashtag to a hashtag_id, then fetch recent_media.
+ *
+ * @param int $uid
+ *   Unused for hashtag search; kept for API consistency.
+ * @param mixed $data
+ *   Expected: ['hashtag' => 'drupalcon2026'].
+ *
+ * @return array
+ *   Item arrays with keys: title, body, link, timestamp, guid, raw.
+ */
+function actstream_instagram_search_actstream_instagram_search_items_fetch(int $uid, mixed $data): array {
+  $config = \Drupal::config('actstream_instagram_search.settings');
+  $access_token = $config->get('access_token');
+  $user_id = $config->get('user_id');
+  $hashtag = is_array($data) ? ($data['hashtag'] ?? '') : '';
+
+  if (empty($access_token) || empty($user_id) || empty($hashtag)) {
+    return [];
+  }
+
+  try {
+    $client = \Drupal::httpClient();
+    $base = 'https://graph.facebook.com/v19.0';
+
+    // Step 1: resolve hashtag to hashtag_id.
+    $search_response = $client->get($base . '/ig-hashtag-search', [
+      'query' => [
+        'user_id' => $user_id,
+        'q' => $hashtag,
+        'access_token' => $access_token,
+      ],
+    ]);
+    $search_payload = json_decode((string) $search_response->getBody(), TRUE);
+
+    $hashtag_id = $search_payload['data'][0]['id'] ?? NULL;
+    if (!$hashtag_id) {
+      return [];
+    }
+
+    // Step 2: fetch recent media for the hashtag.
+    $media_response = $client->get($base . '/' . $hashtag_id . '/recent_media', [
+      'query' => [
+        'user_id' => $user_id,
+        'fields' => 'id,caption,media_url,permalink,timestamp',
+        'access_token' => $access_token,
+      ],
+    ]);
+    $media_payload = json_decode((string) $media_response->getBody(), TRUE);
+
+    if (empty($media_payload['data'])) {
+      return [];
+    }
+
+    $items = [];
+    foreach ($media_payload['data'] as $post) {
+      $caption = $post['caption'] ?? '';
+      $permalink = $post['permalink'] ?? '';
+      $timestamp = isset($post['timestamp'])
+        ? (int) (new \DateTimeImmutable($post['timestamp']))->getTimestamp()
+        : time();
+
+      $items[] = [
+        'title' => mb_substr($caption, 0, 255) ?: t('Instagram post'),
+        'body' => $caption,
+        'link' => $permalink,
+        'timestamp' => $timestamp,
+        'guid' => 'instagram_search:' . $post['id'],
+        'raw' => json_encode($post),
+      ];
+    }
+    return $items;
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('actstream_instagram_search')->error('Instagram API error: @msg', ['@msg' => $e->getMessage()]);
+    return [];
+  }
+}

@@ -1,0 +1,7 @@
+name: 'Activity Stream — X (Twitter) Hashtag Search'
+type: module
+description: 'Fetches recent posts matching a hashtag from X (Twitter) via the X API v2 search endpoint.'
+package: 'Activity Stream'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - actstream:actstream

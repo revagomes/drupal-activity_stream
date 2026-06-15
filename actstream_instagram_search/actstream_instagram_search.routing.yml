@@ -1,0 +1,7 @@
+actstream_instagram_search.settings:
+  path: '/admin/config/services/actstream/instagram-search'
+  defaults:
+    _form: '\Drupal\actstream_instagram_search\Form\SettingsForm'
+    _title: 'Instagram Hashtag Search settings'
+  requirements:
+    _permission: 'administer actstream'

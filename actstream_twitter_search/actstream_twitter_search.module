@@ -1,0 +1,89 @@
+<?php
+
+/**
+ * @file
+ * Fetches posts matching a hashtag from X (Twitter) via the X API v2 search.
+ */
+
+/**
+ * Implements hook_actstream_services().
+ */
+function actstream_twitter_search_actstream_services(): array {
+  return [
+    'twitter_search' => [
+      'type' => 'twitter_search',
+      'name' => t('X (Twitter) Hashtag'),
+      'verb' => t('tweeted'),
+    ],
+  ];
+}
+
+/**
+ * Implements hook_actstream_twitter_search_items_fetch().
+ *
+ * @param int $uid
+ *   The user ID (unused for hashtag search; kept for API consistency).
+ * @param mixed $data
+ *   Expected: ['hashtag' => 'drupalcon2026'].
+ *
+ * @return array
+ *   Item arrays with keys: title, body, link, timestamp, guid, raw.
+ */
+function actstream_twitter_search_actstream_twitter_search_items_fetch(int $uid, mixed $data): array {
+  $bearer_token = \Drupal::config('actstream_twitter_search.settings')->get('bearer_token');
+  $hashtag = is_array($data) ? ($data['hashtag'] ?? '') : '';
+
+  if (empty($bearer_token) || empty($hashtag)) {
+    return [];
+  }
+
+  try {
+    $client = \Drupal::httpClient();
+    $response = $client->get('https://api.twitter.com/2/tweets/search/recent', [
+      'headers' => ['Authorization' => 'Bearer ' . $bearer_token],
+      'query' => [
+        'query' => '#' . $hashtag,
+        'tweet.fields' => 'created_at,author_id',
+        'max_results' => 20,
+        'expansions' => 'author_id',
+        'user.fields' => 'username',
+      ],
+    ]);
+    $payload = json_decode((string) $response->getBody(), TRUE);
+
+    if (empty($payload['data'])) {
+      return [];
+    }
+
+    // Build a username lookup from the includes block.
+    $usernames = [];
+    foreach ($payload['includes']['users'] ?? [] as $user) {
+      $usernames[$user['id']] = $user['username'];
+    }
+
+    $items = [];
+    foreach ($payload['data'] as $tweet) {
+      $tweet_id = $tweet['id'];
+      $author_id = $tweet['author_id'] ?? '';
+      $username = $usernames[$author_id] ?? 'unknown';
+      $post_url = 'https://x.com/' . rawurlencode($username) . '/status/' . $tweet_id;
+      $timestamp = isset($tweet['created_at'])
+        ? (int) (new \DateTimeImmutable($tweet['created_at']))->getTimestamp()
+        : time();
+
+      $items[] = [
+        'title' => mb_substr($tweet['text'], 0, 255),
+        'body' => $tweet['text'],
+        'link' => $post_url,
+        'timestamp' => $timestamp,
+        'guid' => 'twitter_search:' . $tweet_id,
+        'raw' => json_encode($tweet),
+      ];
+    }
+    return $items;
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('actstream_twitter_search')->error('X search API error: @msg', ['@msg' => $e->getMessage()]);
+    return [];
+  }
+}

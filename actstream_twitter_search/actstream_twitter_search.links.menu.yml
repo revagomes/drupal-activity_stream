@@ -1,0 +1,5 @@
+actstream_twitter_search.settings:
+  title: 'X (Twitter) Hashtag Search'
+  description: 'Configure X Bearer token for hashtag search.'
+  parent: system.admin_config_services
+  route_name: actstream_twitter_search.settings

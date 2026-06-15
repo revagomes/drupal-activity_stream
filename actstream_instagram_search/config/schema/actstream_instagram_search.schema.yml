@@ -1,0 +1,10 @@
+actstream_instagram_search.settings:
+  type: config_object
+  label: 'Activity Stream Instagram Hashtag Search settings'
+  mapping:
+    access_token:
+      type: string
+      label: 'Access token'
+    user_id:
+      type: string
+      label: 'Instagram Business user ID'

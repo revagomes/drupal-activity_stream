@@ -1,0 +1,7 @@
+actstream_twitter_search.settings:
+  path: '/admin/config/services/actstream/twitter-search'
+  defaults:
+    _form: '\Drupal\actstream_twitter_search\Form\SettingsForm'
+    _title: 'X (Twitter) Hashtag Search settings'
+  requirements:
+    _permission: 'administer actstream'

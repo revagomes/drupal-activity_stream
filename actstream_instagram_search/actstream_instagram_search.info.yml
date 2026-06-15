@@ -1,0 +1,7 @@
+name: 'Activity Stream — Instagram Hashtag Search'
+type: module
+description: 'Fetches recent Instagram posts matching a hashtag via the Meta Graph API.'
+package: 'Activity Stream'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - actstream:actstream
