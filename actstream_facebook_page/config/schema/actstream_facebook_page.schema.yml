@@ -1,0 +1,10 @@
+actstream_facebook_page.settings:
+  type: config_object
+  label: 'Activity Stream Facebook Page settings'
+  mapping:
+    page_access_token:
+      type: string
+      label: 'Page access token'
+    page_id:
+      type: string
+      label: 'Facebook Page ID'

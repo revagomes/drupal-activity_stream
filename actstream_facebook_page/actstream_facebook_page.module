@@ -1,0 +1,84 @@
+<?php
+
+/**
+ * @file
+ * Fetches Facebook Page posts into the Activity Stream via the Meta Graph API.
+ */
+
+/**
+ * Implements hook_actstream_services().
+ */
+function actstream_facebook_page_actstream_services(): array {
+  return [
+    'facebook_page' => [
+      'type' => 'facebook_page',
+      'name' => t('Facebook Page'),
+      'verb' => t('shared'),
+      'icon' => 'https://www.facebook.com/favicon.ico',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_actstream_facebook_page_items_fetch().
+ *
+ * Fetches the 20 most recent posts from the configured Facebook Page.
+ * The $data['hashtag'] key is intentionally ignored — Facebook's Graph API
+ * does not support public hashtag search. Moderation provides relevance.
+ *
+ * @param int $uid
+ *   Unused for page fetch; kept for API consistency.
+ * @param mixed $data
+ *   May contain ['hashtag' => '...'] but it is ignored here.
+ *
+ * @return array
+ *   Item arrays with keys: title, body, link, timestamp, guid, raw.
+ */
+function actstream_facebook_page_actstream_facebook_page_items_fetch(int $uid, mixed $data): array {
+  $config = \Drupal::config('actstream_facebook_page.settings');
+  $page_access_token = $config->get('page_access_token');
+  $page_id = $config->get('page_id');
+
+  if (empty($page_access_token) || empty($page_id)) {
+    return [];
+  }
+
+  try {
+    $client = \Drupal::httpClient();
+    $response = $client->get('https://graph.facebook.com/v19.0/' . $page_id . '/posts', [
+      'query' => [
+        'fields' => 'id,message,story,permalink_url,created_time',
+        'access_token' => $page_access_token,
+        'limit' => 20,
+      ],
+    ]);
+    $payload = json_decode((string) $response->getBody(), TRUE);
+
+    if (empty($payload['data'])) {
+      return [];
+    }
+
+    $items = [];
+    foreach ($payload['data'] as $post) {
+      $text = $post['message'] ?? ($post['story'] ?? '');
+      $permalink = $post['permalink_url'] ?? '';
+      $timestamp = isset($post['created_time'])
+        ? (int) (new \DateTimeImmutable($post['created_time']))->getTimestamp()
+        : time();
+
+      $items[] = [
+        'title' => mb_substr($text, 0, 255) ?: t('Facebook post'),
+        'body' => $text,
+        'link' => $permalink,
+        'timestamp' => $timestamp,
+        'guid' => 'facebook_page:' . $post['id'],
+        'raw' => json_encode($post),
+      ];
+    }
+    return $items;
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('actstream_facebook_page')->error('Facebook Graph API error: @msg', ['@msg' => $e->getMessage()]);
+    return [];
+  }
+}

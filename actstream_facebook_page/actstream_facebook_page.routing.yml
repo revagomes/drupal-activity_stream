@@ -1,0 +1,7 @@
+actstream_facebook_page.settings:
+  path: '/admin/config/services/actstream/facebook-page'
+  defaults:
+    _form: '\Drupal\actstream_facebook_page\Form\SettingsForm'
+    _title: 'Facebook Page settings'
+  requirements:
+    _permission: 'administer actstream'

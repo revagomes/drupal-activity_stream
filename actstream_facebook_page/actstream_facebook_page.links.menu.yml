@@ -1,0 +1,5 @@
+actstream_facebook_page.settings:
+  title: 'Facebook Page'
+  description: 'Configure Facebook Page ID and access token.'
+  parent: system.admin_config_services
+  route_name: actstream_facebook_page.settings

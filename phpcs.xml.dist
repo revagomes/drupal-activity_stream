@@ -7,6 +7,8 @@
   <file>actstream_feed/actstream_feed.module</file>
   <file>actstream_feed/actstream_feed.install</file>
   <file>actstream_twitter/actstream_twitter.module</file>
+  <file>actstream_facebook_page/actstream_facebook_page.module</file>
+  <file>actstream_facebook_page/src</file>
   <rule ref="Drupal"/>
   <rule ref="DrupalPractice"/>
   <!-- SimplePie is a vendored library, not subject to Drupal CS -->
