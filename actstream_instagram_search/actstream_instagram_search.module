@@ -46,15 +46,21 @@ function actstream_instagram_search_actstream_instagram_search_items_fetch(int $
     $client = \Drupal::httpClient();
     $base = 'https://graph.facebook.com/v19.0';
 
+    $auth_header = ['Authorization' => 'Bearer ' . $access_token];
+
     // Step 1: resolve hashtag to hashtag_id.
     $search_response = $client->get($base . '/ig-hashtag-search', [
+      'headers' => $auth_header,
       'query' => [
         'user_id' => $user_id,
         'q' => $hashtag,
-        'access_token' => $access_token,
       ],
     ]);
     $search_payload = json_decode((string) $search_response->getBody(), TRUE);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      \Drupal::logger('actstream_instagram_search')->error('Instagram hashtag search: invalid JSON response.');
+      return [];
+    }
 
     $hashtag_id = $search_payload['data'][0]['id'] ?? NULL;
     if (!$hashtag_id) {
@@ -63,13 +69,18 @@ function actstream_instagram_search_actstream_instagram_search_items_fetch(int $
 
     // Step 2: fetch recent media for the hashtag.
     $media_response = $client->get($base . '/' . $hashtag_id . '/recent_media', [
+      'headers' => $auth_header,
       'query' => [
         'user_id' => $user_id,
-        'fields' => 'id,caption,media_url,permalink,timestamp',
-        'access_token' => $access_token,
+        'fields' => 'id,caption,permalink,timestamp',
+        'limit' => 20,
       ],
     ]);
     $media_payload = json_decode((string) $media_response->getBody(), TRUE);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      \Drupal::logger('actstream_instagram_search')->error('Instagram recent_media: invalid JSON response.');
+      return [];
+    }
 
     if (empty($media_payload['data'])) {
       return [];
@@ -84,7 +95,7 @@ function actstream_instagram_search_actstream_instagram_search_items_fetch(int $
         : time();
 
       $items[] = [
-        'title' => mb_substr($caption, 0, 255) ?: t('Instagram post'),
+        'title' => $caption !== '' ? mb_substr($caption, 0, 200) : (string) t('Instagram post'),
         'body' => $caption,
         'link' => $permalink,
         'timestamp' => $timestamp,
@@ -94,8 +105,16 @@ function actstream_instagram_search_actstream_instagram_search_items_fetch(int $
     }
     return $items;
   }
+  catch (\GuzzleHttp\Exception\RequestException $e) {
+    $body = $e->hasResponse() ? (string) $e->getResponse()->getBody() : '';
+    \Drupal::logger('actstream_instagram_search')->error('Instagram API HTTP error @code: @body', [
+      '@code' => $e->hasResponse() ? $e->getResponse()->getStatusCode() : 0,
+      '@body' => mb_substr($body, 0, 512),
+    ]);
+    return [];
+  }
   catch (\Exception $e) {
-    \Drupal::logger('actstream_instagram_search')->error('Instagram API error: @msg', ['@msg' => $e->getMessage()]);
+    \Drupal::logger('actstream_instagram_search')->error('Instagram API error: @class', ['@class' => get_class($e)]);
     return [];
   }
 }

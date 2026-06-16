@@ -48,3 +48,21 @@ function actstream_schema(): array {
 function actstream_uninstall(): void {
   // Intentionally empty: entity content is preserved on uninstall.
 }
+
+/**
+ * Add actstream_event_id base field to existing actstream_item entities.
+ */
+function actstream_update_10001(): void {
+  $storage_definition = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    ->setLabel(t('Event ID'))
+    ->setDescription(t('Machine name of the owning event. Empty for user stream items.'))
+    ->setSetting('max_length', 255)
+    ->setDefaultValue('');
+
+  \Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition(
+    'actstream_event_id',
+    'actstream_item',
+    'actstream',
+    $storage_definition
+  );
+}

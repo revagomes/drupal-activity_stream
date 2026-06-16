@@ -46,9 +46,9 @@ function actstream_facebook_page_actstream_facebook_page_items_fetch(int $uid, m
   try {
     $client = \Drupal::httpClient();
     $response = $client->get('https://graph.facebook.com/v19.0/' . $page_id . '/posts', [
+      'headers' => ['Authorization' => 'Bearer ' . $page_access_token],
       'query' => [
         'fields' => 'id,message,story,permalink_url,created_time',
-        'access_token' => $page_access_token,
         'limit' => 20,
       ],
     ]);
@@ -67,7 +67,7 @@ function actstream_facebook_page_actstream_facebook_page_items_fetch(int $uid, m
         : time();
 
       $items[] = [
-        'title' => mb_substr($text, 0, 255) ?: t('Facebook post'),
+        'title' => $text !== '' ? mb_substr($text, 0, 200) : (string) t('Facebook post'),
         'body' => $text,
         'link' => $permalink,
         'timestamp' => $timestamp,
@@ -86,7 +86,7 @@ function actstream_facebook_page_actstream_facebook_page_items_fetch(int $uid, m
     return [];
   }
   catch (\Exception $e) {
-    \Drupal::logger('actstream_facebook_page')->error('Facebook Graph API error: @msg', ['@msg' => $e->getMessage()]);
+    \Drupal::logger('actstream_facebook_page')->error('Facebook Graph API error: @class', ['@class' => get_class($e)]);
     return [];
   }
 }

@@ -74,14 +74,15 @@ function actstream_twitter_search_actstream_twitter_search_items_fetch(int $uid,
       $timestamp = isset($tweet['created_at'])
         ? (int) (new \DateTimeImmutable($tweet['created_at']))->getTimestamp()
         : time();
+      $text = $tweet['text'] ?? '';
 
       $items[] = [
-        'title' => mb_substr($tweet['text'], 0, 255),
-        'body' => $tweet['text'],
+        'title' => mb_substr($text, 0, 200),
+        'body' => $text,
         'link' => $post_url,
         'timestamp' => $timestamp,
         'guid' => 'twitter_search:' . $tweet_id,
-        'raw' => json_encode($tweet),
+        'raw' => json_encode($tweet) ?: '{}',
       ];
     }
     return $items;
@@ -95,7 +96,7 @@ function actstream_twitter_search_actstream_twitter_search_items_fetch(int $uid,
     return [];
   }
   catch (\Exception $e) {
-    \Drupal::logger('actstream_twitter_search')->error('X search API error: @msg', ['@msg' => $e->getMessage()]);
+    \Drupal::logger('actstream_twitter_search')->error('X search API error: @class', ['@class' => get_class($e)]);
     return [];
   }
 }
