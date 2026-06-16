@@ -1,0 +1,5 @@
+entity.actstream_event.add_form:
+  route_name: entity.actstream_event.add_form
+  title: 'Add event'
+  appears_on:
+    - entity.actstream_event.collection

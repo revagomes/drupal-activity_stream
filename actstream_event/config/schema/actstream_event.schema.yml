@@ -1,0 +1,28 @@
+actstream_event.actstream_event.*:
+  type: config_entity
+  label: 'Activity Stream Event'
+  mapping:
+    id:
+      type: string
+      label: 'Machine name'
+    label:
+      type: label
+      label: 'Label'
+    hashtag:
+      type: string
+      label: 'Hashtag (without #)'
+    active:
+      type: boolean
+      label: 'Active'
+    services:
+      type: sequence
+      label: 'Services'
+      sequence:
+        type: string
+        label: 'Service ID'
+    start_date:
+      type: string
+      label: 'Start date (YYYY-MM-DD)'
+    end_date:
+      type: string
+      label: 'End date (YYYY-MM-DD)'

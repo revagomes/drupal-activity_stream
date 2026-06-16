@@ -1,0 +1,7 @@
+name: 'Activity Stream — Events'
+type: module
+description: 'Defines events that drive hashtag-based aggregation for the Activity Stream social wall.'
+package: 'Activity Stream'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - actstream:actstream

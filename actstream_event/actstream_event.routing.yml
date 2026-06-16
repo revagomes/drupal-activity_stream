@@ -1,0 +1,31 @@
+entity.actstream_event.collection:
+  path: '/admin/config/actstream/events'
+  defaults:
+    _entity_list: 'actstream_event'
+    _title: 'Activity Stream Events'
+  requirements:
+    _permission: 'administer actstream events'
+
+entity.actstream_event.add_form:
+  path: '/admin/config/actstream/events/add'
+  defaults:
+    _entity_form: 'actstream_event.add'
+    _title: 'Add Activity Stream Event'
+  requirements:
+    _permission: 'administer actstream events'
+
+entity.actstream_event.edit_form:
+  path: '/admin/config/actstream/events/{actstream_event}/edit'
+  defaults:
+    _entity_form: 'actstream_event.edit'
+    _title: 'Edit Activity Stream Event'
+  requirements:
+    _permission: 'administer actstream events'
+
+entity.actstream_event.delete_form:
+  path: '/admin/config/actstream/events/{actstream_event}/delete'
+  defaults:
+    _entity_form: 'actstream_event.delete'
+    _title: 'Delete Activity Stream Event'
+  requirements:
+    _permission: 'administer actstream events'

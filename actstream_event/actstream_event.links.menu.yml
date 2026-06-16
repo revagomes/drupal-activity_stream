@@ -1,0 +1,5 @@
+entity.actstream_event.collection:
+  title: 'Activity Stream Events'
+  description: 'Manage events that drive social wall aggregation.'
+  parent: system.admin_config_services
+  route_name: entity.actstream_event.collection

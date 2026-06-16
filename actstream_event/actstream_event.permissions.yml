@@ -1,0 +1,3 @@
+administer actstream events:
+  title: 'Administer Activity Stream events'
+  restrict access: true

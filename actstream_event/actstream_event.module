@@ -1,0 +1,6 @@
+<?php
+
+/**
+ * @file
+ * Manages Activity Stream Events that drive hashtag aggregation for the wall.
+ */
