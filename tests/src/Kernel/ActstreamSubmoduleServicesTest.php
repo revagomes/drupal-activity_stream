@@ -20,6 +20,9 @@ class ActstreamSubmoduleServicesTest extends KernelTestBase {
     'actstream_flickr',
     'actstream_lastfm',
     'actstream_twitter',
+    'actstream_twitter_search',
+    'actstream_instagram_search',
+    'actstream_facebook_page',
     'field',
     'filter',
     'system',
@@ -37,7 +40,13 @@ class ActstreamSubmoduleServicesTest extends KernelTestBase {
     $this->installEntitySchema('user');
     $this->installEntitySchema('actstream_item');
     $this->installSchema('actstream', ['actstream_account']);
-    $this->installConfig(['actstream_flickr', 'actstream_lastfm']);
+    $this->installConfig([
+      'actstream_flickr',
+      'actstream_lastfm',
+      'actstream_twitter_search',
+      'actstream_instagram_search',
+      'actstream_facebook_page',
+    ]);
   }
 
   /**
@@ -139,15 +148,105 @@ class ActstreamSubmoduleServicesTest extends KernelTestBase {
   }
 
   /**
-   * Tests actstream_services_load() returns all four registered services.
+   * Tests actstream_services_load() returns all registered services.
    */
   public function testAllServicesRegistered(): void {
+    drupal_static_reset('actstream_services_load');
     $services = actstream_services_load();
 
     $this->assertArrayHasKey('feed', $services);
     $this->assertArrayHasKey('flickr', $services);
     $this->assertArrayHasKey('lastfm', $services);
     $this->assertArrayHasKey('twitter', $services);
+    $this->assertArrayHasKey('twitter_search', $services);
+    $this->assertArrayHasKey('instagram_search', $services);
+    $this->assertArrayHasKey('facebook_page', $services);
+  }
+
+  /**
+   * Tests that actstream_twitter_search registers the twitter_search service.
+   */
+  public function testTwitterSearchServiceRegistration(): void {
+    drupal_static_reset('actstream_services_load');
+    $services = actstream_services_load();
+
+    $this->assertArrayHasKey('twitter_search', $services);
+    $this->assertSame('twitter_search', $services['twitter_search']['type']);
+    $this->assertArrayHasKey('name', $services['twitter_search']);
+    $this->assertArrayHasKey('verb', $services['twitter_search']);
+  }
+
+  /**
+   * Tests that actstream_instagram_search registers the instagram_search service.
+   */
+  public function testInstagramSearchServiceRegistration(): void {
+    drupal_static_reset('actstream_services_load');
+    $services = actstream_services_load();
+
+    $this->assertArrayHasKey('instagram_search', $services);
+    $this->assertSame('instagram_search', $services['instagram_search']['type']);
+  }
+
+  /**
+   * Tests that actstream_facebook_page registers the facebook_page service.
+   */
+  public function testFacebookPageServiceRegistration(): void {
+    drupal_static_reset('actstream_services_load');
+    $services = actstream_services_load();
+
+    $this->assertArrayHasKey('facebook_page', $services);
+    $this->assertSame('facebook_page', $services['facebook_page']['type']);
+  }
+
+  /**
+   * Tests twitter_search fetch returns [] with no token.
+   */
+  public function testTwitterSearchFetchNoToken(): void {
+    $items = actstream_twitter_search_actstream_twitter_search_items_fetch(0, ['hashtag' => 'drupalcon']);
+    $this->assertSame([], $items);
+  }
+
+  /**
+   * Tests twitter_search fetch returns [] with no hashtag.
+   */
+  public function testTwitterSearchFetchNoHashtag(): void {
+    \Drupal::configFactory()
+      ->getEditable('actstream_twitter_search.settings')
+      ->set('bearer_token', 'tok')
+      ->save();
+
+    $items = actstream_twitter_search_actstream_twitter_search_items_fetch(0, []);
+    $this->assertSame([], $items);
+  }
+
+  /**
+   * Tests instagram_search fetch returns [] with no credentials.
+   */
+  public function testInstagramSearchFetchNoCredentials(): void {
+    $items = actstream_instagram_search_actstream_instagram_search_items_fetch(0, ['hashtag' => 'drupalcon']);
+    $this->assertSame([], $items);
+  }
+
+  /**
+   * Tests instagram_search fetch returns [] with no hashtag.
+   */
+  public function testInstagramSearchFetchNoHashtag(): void {
+    \Drupal::configFactory()
+      ->getEditable('actstream_instagram_search.settings')
+      ->set('access_token', 'tok')
+      ->set('user_id', '12345')
+      ->save();
+
+    $items = actstream_instagram_search_actstream_instagram_search_items_fetch(0, []);
+    $this->assertSame([], $items);
+  }
+
+  /**
+   * Tests facebook_page fetch returns [] with no credentials.
+   */
+  public function testFacebookPageFetchNoCredentials(): void {
+    $items = actstream_facebook_page_actstream_facebook_page_items_fetch(0, []);
+    $this->assertSame([], $items);
   }
 
 }
