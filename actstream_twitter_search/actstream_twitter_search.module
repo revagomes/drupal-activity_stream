@@ -50,6 +50,10 @@ function actstream_twitter_search_actstream_twitter_search_items_fetch(int $uid,
       ],
     ]);
     $payload = json_decode((string) $response->getBody(), TRUE);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      \Drupal::logger('actstream_twitter_search')->error('X search API: invalid JSON response.');
+      return [];
+    }
 
     if (empty($payload['data'])) {
       return [];
@@ -81,6 +85,14 @@ function actstream_twitter_search_actstream_twitter_search_items_fetch(int $uid,
       ];
     }
     return $items;
+  }
+  catch (\GuzzleHttp\Exception\RequestException $e) {
+    $body = $e->hasResponse() ? (string) $e->getResponse()->getBody() : '';
+    \Drupal::logger('actstream_twitter_search')->error('X search API HTTP error @code: @body', [
+      '@code' => $e->hasResponse() ? $e->getResponse()->getStatusCode() : 0,
+      '@body' => mb_substr($body, 0, 512),
+    ]);
+    return [];
   }
   catch (\Exception $e) {
     \Drupal::logger('actstream_twitter_search')->error('X search API error: @msg', ['@msg' => $e->getMessage()]);

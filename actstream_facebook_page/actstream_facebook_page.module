@@ -77,6 +77,14 @@ function actstream_facebook_page_actstream_facebook_page_items_fetch(int $uid, m
     }
     return $items;
   }
+  catch (\GuzzleHttp\Exception\RequestException $e) {
+    $body = $e->hasResponse() ? (string) $e->getResponse()->getBody() : '';
+    \Drupal::logger('actstream_facebook_page')->error('Facebook Graph API HTTP error @code: @body', [
+      '@code' => $e->hasResponse() ? $e->getResponse()->getStatusCode() : 0,
+      '@body' => mb_substr($body, 0, 512),
+    ]);
+    return [];
+  }
   catch (\Exception $e) {
     \Drupal::logger('actstream_facebook_page')->error('Facebook Graph API error: @msg', ['@msg' => $e->getMessage()]);
     return [];

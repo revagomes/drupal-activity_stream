@@ -39,11 +39,10 @@ class SettingsForm extends ConfigFormBase {
     ];
 
     $form['page_access_token'] = [
-      '#type' => 'textfield',
+      '#type' => 'password',
       '#title' => $this->t('Page access token'),
-      '#default_value' => $config->get('page_access_token'),
-      '#description' => $this->t('Page Access Token from the <a href=":url">Meta Developer Portal</a>.', [':url' => 'https://developers.facebook.com/apps/']),
-      '#required' => TRUE,
+      '#description' => $this->t('Page Access Token from the <a href=":url">Meta Developer Portal</a>. Leave blank to keep the existing token.', [':url' => 'https://developers.facebook.com/apps/'])
+        . ($config->get('page_access_token') ? ' ' . $this->t('(Currently saved.)') : ''),
     ];
 
     return parent::buildForm($form, $form_state);
@@ -53,9 +52,12 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
-    $this->config('actstream_facebook_page.settings')
-      ->set('page_id', $form_state->getValue('page_id'))
-      ->set('page_access_token', $form_state->getValue('page_access_token'))
+    $config = $this->config('actstream_facebook_page.settings');
+    $page_access_token = $form_state->getValue('page_access_token');
+    if (!empty($page_access_token)) {
+      $config->set('page_access_token', $page_access_token);
+    }
+    $config->set('page_id', $form_state->getValue('page_id'))
       ->save();
 
     parent::submitForm($form, $form_state);

@@ -31,11 +31,10 @@ class SettingsForm extends ConfigFormBase {
     $config = $this->config('actstream_instagram_search.settings');
 
     $form['access_token'] = [
-      '#type' => 'textfield',
+      '#type' => 'password',
       '#title' => $this->t('Access token'),
-      '#default_value' => $config->get('access_token'),
-      '#description' => $this->t('Long-lived User Access Token or System User Token from the <a href=":url">Meta Developer Portal</a>.', [':url' => 'https://developers.facebook.com/apps/']),
-      '#required' => TRUE,
+      '#description' => $this->t('Long-lived User Access Token or System User Token from the <a href=":url">Meta Developer Portal</a>. Leave blank to keep the existing token.', [':url' => 'https://developers.facebook.com/apps/'])
+        . ($config->get('access_token') ? ' ' . $this->t('(Currently saved.)') : ''),
     ];
 
     $form['user_id'] = [
@@ -53,9 +52,12 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
-    $this->config('actstream_instagram_search.settings')
-      ->set('access_token', $form_state->getValue('access_token'))
-      ->set('user_id', $form_state->getValue('user_id'))
+    $config = $this->config('actstream_instagram_search.settings');
+    $access_token = $form_state->getValue('access_token');
+    if (!empty($access_token)) {
+      $config->set('access_token', $access_token);
+    }
+    $config->set('user_id', $form_state->getValue('user_id'))
       ->save();
 
     parent::submitForm($form, $form_state);
