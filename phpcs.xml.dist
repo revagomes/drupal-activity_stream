@@ -9,6 +9,9 @@
   <file>actstream_twitter/actstream_twitter.module</file>
   <file>actstream_facebook_page/actstream_facebook_page.module</file>
   <file>actstream_facebook_page/src</file>
+  <file>actstream_event/actstream_event.module</file>
+  <file>actstream_event/src</file>
+  <file>tests</file>
   <rule ref="Drupal"/>
   <rule ref="DrupalPractice"/>
   <!-- SimplePie is a vendored library, not subject to Drupal CS -->

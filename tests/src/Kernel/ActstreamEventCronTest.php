@@ -43,7 +43,7 @@ class ActstreamEventCronTest extends KernelTestBase {
   }
 
   /**
-   * Tests _actstream_event_save_pending() saves items with status=0 and event_id.
+   * Tests _actstream_event_save_pending() saves status=0 items with event_id.
    */
   public function testSavePendingCreatesStatusZeroItems(): void {
     $items = [
@@ -66,7 +66,8 @@ class ActstreamEventCronTest extends KernelTestBase {
 
     $this->assertCount(1, $ids);
 
-    $entity = \Drupal::entityTypeManager()->getStorage('actstream_item')->load(reset($ids));
+    $storage = \Drupal::entityTypeManager()->getStorage('actstream_item');
+    $entity = $storage->load(reset($ids));
     $this->assertSame(0, (int) $entity->get('status')->value);
     $this->assertSame('dc2026', $entity->get('actstream_event_id')->value);
     $this->assertSame('twitter_search', $entity->get('service')->value);
@@ -103,8 +104,11 @@ class ActstreamEventCronTest extends KernelTestBase {
    */
   public function testCronWithNoActiveEvents(): void {
     actstream_event_cron();
-    // No exception thrown = pass.
-    $this->assertTrue(TRUE);
+    $count = \Drupal::entityQuery('actstream_item')
+      ->accessCheck(FALSE)
+      ->count()
+      ->execute();
+    $this->assertSame(0, (int) $count);
   }
 
 }

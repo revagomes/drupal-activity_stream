@@ -21,8 +21,13 @@ function actstream_event_cron(): void {
     $event_id = $event->id();
 
     foreach ($event->getServices() as $service_id) {
-      $items = actstream_items_fetch(1, $service_id, ['hashtag' => $hashtag]);
-      _actstream_event_save_pending($service_id, $event_id, $items);
+      try {
+        $items = actstream_items_fetch(1, $service_id, ['hashtag' => $hashtag]);
+        _actstream_event_save_pending($service_id, $event_id, $items);
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('actstream_event')->error($e->getMessage());
+      }
     }
   }
 }
@@ -40,7 +45,11 @@ function actstream_event_cron(): void {
  * @param array $items
  *   Items returned by actstream_items_fetch().
  */
-function _actstream_event_save_pending(string $service, string $event_id, array $items): void {
+function _actstream_event_save_pending(
+  string $service,
+  string $event_id,
+  array $items
+): void {
   if (empty($items)) {
     return;
   }
@@ -48,7 +57,10 @@ function _actstream_event_save_pending(string $service, string $event_id, array 
   $item_storage = \Drupal::entityTypeManager()->getStorage('actstream_item');
 
   foreach ($items as $item) {
-    $guid = !empty($item['guid']) ? $item['guid'] : $item['link'];
+    $guid = $item['guid'] ?? ($item['link'] ?? '');
+    if (empty($guid)) {
+      continue;
+    }
 
     $existing = \Drupal::entityQuery('actstream_item')
       ->condition('actstream_guid', $guid)
@@ -68,8 +80,8 @@ function _actstream_event_save_pending(string $service, string $event_id, array 
       'status' => 0,
       'actstream_event_id' => $event_id,
     ]);
-    $entity->set('title', $item['title']);
-    $entity->set('created', $item['timestamp']);
+    $entity->set('title', $item['title'] ?? '');
+    $entity->set('created', $item['timestamp'] ?? \Drupal::time()->getRequestTime());
     $entity->set('actstream_link', $item['link'] ?? '');
     $entity->set('actstream_guid', $guid);
     $entity->set('actstream_raw', $item['raw'] ?? '');

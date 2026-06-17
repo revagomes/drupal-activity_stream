@@ -57,14 +57,15 @@ class ActstreamEventEntityTest extends KernelTestBase {
     $this->assertSame('DrupalCon 2026', $loaded->label());
     $this->assertSame('drupalcon2026', $loaded->getHashtag());
     $this->assertTrue($loaded->isActive());
-    $this->assertSame(['twitter_search', 'instagram_search'], $loaded->getServices());
+    $expected_services = ['twitter_search', 'instagram_search'];
+    $this->assertSame($expected_services, $loaded->getServices());
 
     $loaded->delete();
     $this->assertNull($storage->load('dc2026'));
   }
 
   /**
-   * Tests that inactive events do not appear in a loadByProperties active query.
+   * Tests inactive events are excluded from a loadByProperties active query.
    */
   public function testInactiveEventNotLoaded(): void {
     $storage = \Drupal::entityTypeManager()->getStorage('actstream_event');
