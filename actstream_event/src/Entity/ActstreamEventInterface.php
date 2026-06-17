@@ -26,4 +26,14 @@ interface ActstreamEventInterface extends ConfigEntityInterface {
    */
   public function isActive(): bool;
 
+  /**
+   * Returns the optional start date (YYYY-MM-DD), or empty string.
+   */
+  public function getStartDate(): string;
+
+  /**
+   * Returns the optional end date (YYYY-MM-DD), or empty string.
+   */
+  public function getEndDate(): string;
+
 }

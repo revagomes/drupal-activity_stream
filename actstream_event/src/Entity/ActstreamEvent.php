@@ -106,4 +106,18 @@ class ActstreamEvent extends ConfigEntityBase implements ActstreamEventInterface
     return $this->active;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getStartDate(): string {
+    return $this->start_date;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEndDate(): string {
+    return $this->end_date;
+  }
+
 }

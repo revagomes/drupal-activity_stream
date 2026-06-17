@@ -68,14 +68,14 @@ class ActstreamEventForm extends EntityForm {
     $form['start_date'] = [
       '#type' => 'date',
       '#title' => $this->t('Start date'),
-      '#default_value' => $event->start_date ?? '',
+      '#default_value' => $event->getStartDate(),
       '#description' => $this->t('Optional. Aggregation begins on this date.'),
     ];
 
     $form['end_date'] = [
       '#type' => 'date',
       '#title' => $this->t('End date'),
-      '#default_value' => $event->end_date ?? '',
+      '#default_value' => $event->getEndDate(),
       '#description' => $this->t('Optional. Aggregation stops after this date.'),
     ];
 
