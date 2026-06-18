@@ -1,0 +1,17 @@
+name: 'Activity Stream Social Wall'
+description: 'Installs the Activity Stream Social Wall MVP: X hashtag search, Instagram hashtag search, Facebook Page posts, event config, moderation queue, and public auto-refreshing wall.'
+type: module
+
+recipes: []
+
+install:
+  - actstream
+  - actstream_twitter_search
+  - actstream_instagram_search
+  - actstream_facebook_page
+  - actstream_event
+  - actstream_mod_queue
+  - actstream_wall
+
+config:
+  actions: {}
