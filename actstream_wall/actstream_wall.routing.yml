@@ -1,0 +1,16 @@
+actstream_wall.page:
+  path: '/actstream/wall'
+  defaults:
+    _controller: '\Drupal\actstream_wall\Controller\WallController::page'
+    _title: 'Social Wall'
+  requirements:
+    _permission: 'access content'
+
+actstream_wall.refresh:
+  path: '/actstream/wall/refresh'
+  defaults:
+    _controller: '\Drupal\actstream_wall\Controller\WallController::refresh'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE

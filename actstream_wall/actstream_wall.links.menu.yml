@@ -1,0 +1,6 @@
+actstream_wall.page:
+  title: 'Social Wall'
+  description: 'View the public Activity Stream social wall.'
+  route_name: actstream_wall.page
+  menu_name: main
+  weight: 10

@@ -1,0 +1,8 @@
+name: 'Activity Stream — Social Wall'
+type: module
+description: 'Public social wall that displays approved event items and auto-refreshes via JavaScript polling.'
+package: 'Activity Stream'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - actstream:actstream
+  - actstream:actstream_event

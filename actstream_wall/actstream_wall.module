@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Public social wall for Activity Stream event items.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function actstream_wall_theme(): array {
+  return [
+    'actstream_wall' => [
+      'variables' => ['items' => []],
+      'template' => 'actstream-wall',
+    ],
+  ];
+}

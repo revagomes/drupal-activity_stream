@@ -1,0 +1,9 @@
+actstream_wall:
+  version: 1.x
+  js:
+    js/actstream-wall.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/drupalSettings
+    - core/once

@@ -1,0 +1,9 @@
+{# actstream_wall/templates/actstream-wall.html.twig #}
+<div id="actstream-wall" class="actstream-wall">
+  {% for item in items %}
+    {{ item }}
+  {% endfor %}
+  {% if items is empty %}
+    <p class="actstream-wall__empty">{{ 'No posts yet. Check back soon.'|t }}</p>
+  {% endif %}
+</div>
