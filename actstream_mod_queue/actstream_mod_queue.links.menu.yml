@@ -1,0 +1,5 @@
+actstream_mod_queue.queue:
+  title: 'Moderation Queue'
+  description: 'Approve or delete pending Activity Stream wall items.'
+  parent: system.admin_content
+  route_name: actstream_mod_queue.queue

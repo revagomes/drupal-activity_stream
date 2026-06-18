@@ -1,0 +1,7 @@
+actstream_mod_queue.queue:
+  path: '/admin/content/actstream/queue'
+  defaults:
+    _form: '\Drupal\actstream_mod_queue\Form\ModerationQueueForm'
+    _title: 'Activity Stream Moderation Queue'
+  requirements:
+    _permission: 'moderate actstream wall'

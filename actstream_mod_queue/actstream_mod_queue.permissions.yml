@@ -1,0 +1,4 @@
+moderate actstream wall:
+  title: 'Moderate Activity Stream social wall'
+  description: 'Approve or delete pending posts from the social wall queue.'
+  restrict access: true

@@ -1,0 +1,8 @@
+name: 'Activity Stream — Moderation Queue'
+type: module
+description: 'Admin form to approve or delete pending Activity Stream social wall items before they go public.'
+package: 'Activity Stream'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - actstream:actstream
+  - actstream:actstream_event
