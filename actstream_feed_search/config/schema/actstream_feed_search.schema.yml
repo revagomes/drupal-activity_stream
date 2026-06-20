@@ -1,0 +1,10 @@
+actstream_feed_search.settings:
+  type: config_object
+  label: 'Activity Stream Feed Search settings'
+  mapping:
+    feed_urls:
+      type: sequence
+      label: 'RSS/Atom feed URLs to search'
+      sequence:
+        type: string
+        label: 'Feed URL'

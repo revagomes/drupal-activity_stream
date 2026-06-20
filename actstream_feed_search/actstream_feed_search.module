@@ -1,0 +1,104 @@
+<?php
+
+/**
+ * @file
+ * Fetches RSS/Atom feeds and filters by hashtag for the social wall.
+ */
+
+/**
+ * Implements hook_actstream_services().
+ */
+function actstream_feed_search_actstream_services(): array {
+  $module_path = \Drupal::service('extension.list.module')
+    ->getPath('actstream_feed');
+  return [
+    'feed_search' => [
+      'type' => 'feed_search',
+      'name' => t('Feed (hashtag search)'),
+      'verb' => t('posted'),
+      'icon' => $module_path . '/feed.png',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_actstream_feed_search_items_fetch().
+ *
+ * Fetches all configured feed URLs and returns items whose title or
+ * description contains the requested hashtag. Uses PHP's built-in
+ * SimpleXML to avoid the bundled SimplePie PHP-8 incompatibility.
+ */
+function actstream_feed_search_actstream_feed_search_items_fetch(
+  int $uid,
+  mixed $data
+): array {
+  $hashtag = is_array($data) ? ($data['hashtag'] ?? '') : (string) $data;
+  $feed_urls = \Drupal::config('actstream_feed_search.settings')
+    ->get('feed_urls') ?: [];
+
+  if (empty($feed_urls) || empty($hashtag)) {
+    return [];
+  }
+
+  $needle = mb_strtolower('#' . ltrim($hashtag, '#'));
+  $items = [];
+
+  foreach ($feed_urls as $url) {
+    $url = trim($url);
+    if (empty($url)) {
+      continue;
+    }
+    try {
+      $xml = @simplexml_load_file($url);
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('actstream_feed_search')->error(
+        'Failed to load feed @url: @msg',
+        ['@url' => $url, '@msg' => $e->getMessage()]
+      );
+      continue;
+    }
+    if ($xml === FALSE) {
+      \Drupal::logger('actstream_feed_search')->warning(
+        'Could not parse feed: @url', ['@url' => $url]
+      );
+      continue;
+    }
+
+    // Support both RSS 2.0 (<item>) and Atom (<entry>).
+    $entries = $xml->channel->item ?? $xml->entry ?? [];
+    foreach ($entries as $entry) {
+      $title = (string) ($entry->title ?? '');
+      $body = strip_tags((string) ($entry->description
+        ?? $entry->summary
+        ?? $entry->content
+        ?? ''));
+      $link = (string) ($entry->link['href']
+        ?? $entry->link
+        ?? $entry->guid
+        ?? '');
+      $guid = (string) ($entry->guid ?? $entry->id ?? $link);
+      $date = (string) ($entry->pubDate
+        ?? $entry->published
+        ?? $entry->updated
+        ?? '');
+      $ts = $date ? (int) strtotime($date) : \Drupal::time()->getRequestTime();
+
+      $haystack = mb_strtolower($title . ' ' . $body);
+      if (!str_contains($haystack, $needle)) {
+        continue;
+      }
+
+      $items[] = [
+        'title' => $title,
+        'body' => $body,
+        'link' => $link,
+        'guid' => $guid ?: $link,
+        'timestamp' => $ts,
+        'raw' => '',
+      ];
+    }
+  }
+
+  return $items;
+}

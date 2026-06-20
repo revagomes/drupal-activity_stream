@@ -1,0 +1,9 @@
+name: 'Activity Stream — Feed Search'
+type: module
+description: 'Fetches public RSS/Atom feeds and filters by hashtag for the Activity Stream social wall.'
+package: 'Activity Stream'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - actstream:actstream
+  - actstream:actstream_feed
+  - actstream:actstream_event

@@ -1,0 +1,7 @@
+actstream_feed_search.settings:
+  path: '/admin/config/actstream/feed-search'
+  defaults:
+    _form: '\Drupal\actstream_feed_search\Form\FeedSearchSettingsForm'
+    _title: 'Feed Search settings'
+  requirements:
+    _permission: 'administer site configuration'
