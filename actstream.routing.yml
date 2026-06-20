@@ -18,6 +18,19 @@ actstream.user_page:
       user:
         type: entity:user
 
+entity.actstream_item.canonical:
+  path: '/actstream/{actstream_item}'
+  defaults:
+    _entity_view: 'actstream_item'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'access content'
+    actstream_item: \d+
+  options:
+    parameters:
+      actstream_item:
+        type: entity:actstream_item
+
 actstream.user_accounts:
   path: '/user/{user}/edit/actstream'
   defaults:
