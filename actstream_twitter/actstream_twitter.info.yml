@@ -2,6 +2,6 @@ name: 'Activity Stream — X (Twitter)'
 type: module
 description: 'Fetches recent X (Twitter) posts into the Activity Stream via the X API v2 app-only Bearer token.'
 package: 'Activity Stream'
-core_version_requirement: ^10.3 || ^11
+core_version_requirement: ^10.3 || ^11 || ^12
 dependencies:
   - actstream:actstream

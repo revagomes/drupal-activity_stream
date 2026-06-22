@@ -8,62 +8,6 @@
 use Drupal\Core\Url;
 
 /**
- * Implements hook_theme().
- */
-function actstream_theme(): array {
-  return [
-    'actstream_item' => [
-      'variables' => [
-        'actstream_item' => NULL,
-        'service' => NULL,
-        'statement' => [],
-        'service_icon' => [],
-        'permalink_icon' => [],
-        'external_icon' => [],
-        'time_ago' => [],
-      ],
-      'template' => 'actstream-item',
-    ],
-    'actstream_items_wrapper' => [
-      'variables' => ['items' => []],
-      'template' => 'actstream-items-wrapper',
-    ],
-  ];
-}
-
-/**
- * Implements hook_permission().
- */
-function actstream_permission(): array {
-  $permissions = [];
-  foreach (actstream_services_load() as $type => $info) {
-    $type_name = $info['name'];
-    $permissions["edit any $type actstream"] = [
-      'title' => t('%type_name: Edit any Activity Stream', ['%type_name' => $type_name]),
-    ];
-    $permissions["view any $type actstream"] = [
-      'title' => t('%type_name: View any Activity Stream', ['%type_name' => $type_name]),
-    ];
-  }
-  return $permissions;
-}
-
-/**
- * Implements hook_cron().
- */
-function actstream_cron(): void {
-  $results = \Drupal::database()
-    ->select('actstream_account', 'a')
-    ->fields('a', ['uid', 'service', 'data'])
-    ->execute()
-    ->fetchAll();
-  foreach ($results as $result) {
-    $items = actstream_items_fetch((int) $result->uid, $result->service, unserialize($result->data));
-    actstream_items_save((int) $result->uid, $result->service, $items);
-  }
-}
-
-/**
  * Prepares variables for actstream_item templates.
  *
  * Default template: actstream-item.html.twig.

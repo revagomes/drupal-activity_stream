@@ -1,0 +1,4 @@
+services:
+  actstream_wall.hooks:
+    class: Drupal\actstream_wall\Hook\ActstreamWallHooks
+    autowire: true

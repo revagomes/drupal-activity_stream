@@ -2,6 +2,6 @@ name: 'Activity Stream Feed'
 type: module
 description: 'Import RSS and Atom feeds into a user Activity Stream.'
 package: 'Activity Stream'
-core_version_requirement: ^10.3 || ^11
+core_version_requirement: ^10.3 || ^11 || ^12
 dependencies:
   - actstream:actstream

@@ -6,8 +6,9 @@
  */
 
 /**
- * Implements hook_cron().
+ * Fetches and saves pending items for all active events.
  *
+ * Called by ActstreamEventHooks::cron() during Drupal cron runs.
  * For each active event, fetches items from each configured service and saves
  * them with status=0 (pending moderation) and the event ID stamped on them.
  * Items use uid=1 (site admin). Existing items (same GUID) are skipped.

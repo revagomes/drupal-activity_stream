@@ -1,0 +1,4 @@
+services:
+  actstream_lastfm.hooks:
+    class: Drupal\actstream_lastfm\Hook\ActstreamLastfmHooks
+    autowire: true

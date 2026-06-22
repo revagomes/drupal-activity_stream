@@ -23,34 +23,6 @@ function actstream_twitter_actstream_services(): array {
 }
 
 /**
- * Implements hook_form_actstream_accounts_form_alter().
- */
-function actstream_twitter_form_actstream_accounts_form_alter(array &$form, FormStateInterface $form_state): void {
-  $user = $form['#user'];
-  $uid = $user ? $user->id() : \Drupal::currentUser()->id();
-  $data = actstream_account_load('twitter', $uid);
-
-  // Normalise legacy storage (bare string) to array.
-  if (is_string($data)) {
-    $data = ['username' => $data];
-  }
-
-  $form['actstream_twitter'] = [
-    '#type' => 'fieldset',
-    '#title' => t('X (Twitter)'),
-  ];
-  $form['actstream_twitter']['actstream_twitter_username'] = [
-    '#type' => 'textfield',
-    '#title' => t('X (Twitter) username'),
-    '#default_value' => $data['username'] ?? '',
-    '#description' => t('Your X username without the @ sign (e.g. drupal).'),
-    '#field_prefix' => '@',
-  ];
-
-  $form['#submit'][] = 'actstream_twitter_form_actstream_accounts_form_submit';
-}
-
-/**
  * Form submit handler for X account configuration.
  */
 function actstream_twitter_form_actstream_accounts_form_submit(array &$form, FormStateInterface $form_state): void {

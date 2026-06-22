@@ -1,0 +1,4 @@
+services:
+  actstream.hooks:
+    class: Drupal\actstream\Hook\ActstreamHooks
+    autowire: true

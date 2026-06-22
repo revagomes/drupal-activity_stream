@@ -1,0 +1,4 @@
+services:
+  actstream_event.hooks:
+    class: Drupal\actstream_event\Hook\ActstreamEventHooks
+    autowire: true

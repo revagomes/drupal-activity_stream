@@ -1,0 +1,4 @@
+services:
+  actstream_flickr.hooks:
+    class: Drupal\actstream_flickr\Hook\ActstreamFlickrHooks
+    autowire: true

@@ -22,28 +22,6 @@ function actstream_flickr_actstream_services(): array {
 }
 
 /**
- * Implements hook_form_actstream_accounts_form_alter().
- */
-function actstream_flickr_form_actstream_accounts_form_alter(array &$form, FormStateInterface $form_state): void {
-  $user = $form['#user'];
-  $uid = $user ? $user->id() : \Drupal::currentUser()->id();
-  $data = actstream_account_load('flickr', $uid) ?: [];
-
-  $form['actstream_flickr'] = [
-    '#type' => 'fieldset',
-    '#title' => t('Flickr'),
-  ];
-  $form['actstream_flickr']['actstream_flickr_username'] = [
-    '#type' => 'textfield',
-    '#title' => t('Flickr username or NSID'),
-    '#default_value' => $data['username'] ?? '',
-    '#description' => t('Your Flickr username or NSID (e.g. 12345678@N00).'),
-  ];
-
-  $form['#submit'][] = 'actstream_flickr_form_actstream_accounts_form_submit';
-}
-
-/**
  * Form submit handler for Flickr account configuration.
  */
 function actstream_flickr_form_actstream_accounts_form_submit(array &$form, FormStateInterface $form_state): void {

@@ -1,0 +1,4 @@
+services:
+  actstream_twitter.hooks:
+    class: Drupal\actstream_twitter\Hook\ActstreamTwitterHooks
+    autowire: true

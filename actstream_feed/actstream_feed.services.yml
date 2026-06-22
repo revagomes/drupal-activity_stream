@@ -1,0 +1,4 @@
+services:
+  actstream_feed.hooks:
+    class: Drupal\actstream_feed\Hook\ActstreamFeedHooks
+    autowire: true
