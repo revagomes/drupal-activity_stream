@@ -9733,7 +9733,8 @@ class SimplePie_Item
 		}
 		elseif (($date = $this->get_date('U')) !== null && $date !== false)
 		{
-			return strftime($date_format, $date);
+			// strftime() deprecated in PHP 8.1; suppress until SimplePie is replaced.
+			return @strftime($date_format, $date);
 		}
 		else
 		{
@@ -15592,9 +15593,9 @@ class SimplePie_Parser
 			$xml = xml_parser_create_ns($this->encoding, $this->separator);
 			xml_parser_set_option($xml, XML_OPTION_SKIP_WHITE, 1);
 			xml_parser_set_option($xml, XML_OPTION_CASE_FOLDING, 0);
-			xml_set_object($xml, $this);
-			xml_set_character_data_handler($xml, 'cdata');
-			xml_set_element_handler($xml, 'tag_open', 'tag_close');
+			// xml_set_object() deprecated in PHP 8.1; use array callbacks instead.
+			xml_set_character_data_handler($xml, [$this, 'cdata']);
+			xml_set_element_handler($xml, [$this, 'tag_open'], [$this, 'tag_close']);
 
 			// Parse!
 			if (!xml_parse($xml, $data, true))
