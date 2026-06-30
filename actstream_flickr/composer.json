@@ -1,0 +1,11 @@
+{
+  "name": "drupal/actstream_flickr",
+  "description": "Fetches public Flickr photos into the Activity Stream via the Flickr API.",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": "^8.1",
+    "drupal/core": "^10.3 || ^11 || ^12",
+    "samwilson/phpflickr": "^5"
+  }
+}
