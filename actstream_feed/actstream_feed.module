@@ -44,7 +44,6 @@ function actstream_feed_form_actstream_accounts_form_submit(array &$form, FormSt
  */
 function actstream_feed_actstream_feed_items_fetch(int $uid, mixed $feed_urls): array {
   $feed_urls = is_array($feed_urls) ? $feed_urls : [$feed_urls];
-  require_once __DIR__ . '/SimplePie.compiled.php';
 
   $items = [];
   $temp_dir = \Drupal::service('file_system')->getTempDirectory();

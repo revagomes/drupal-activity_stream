@@ -1,0 +1,11 @@
+{
+  "name": "drupal/actstream_feed",
+  "description": "Imports RSS and Atom feeds into the Activity Stream.",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": "^8.1",
+    "drupal/core": "^10.3 || ^11 || ^12",
+    "simplepie/simplepie": "^1.8"
+  }
+}
