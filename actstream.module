@@ -23,7 +23,7 @@ function template_preprocess_actstream_item(array &$variables): void {
   $service = $services[$service_id] ?? [];
   $variables['service'] = $service;
 
-  $link = $item->get('actstream_link')->value;
+  $link = $item->get('actstream_link')->value ?? '';
   $id = $item->id();
 
   // Statement: actor — verb — object.
@@ -34,11 +34,11 @@ function template_preprocess_actstream_item(array &$variables): void {
   $variables['statement']['verb'] = [
     '#markup' => $service['verb'] ?? '',
   ];
-  $variables['statement']['object'] = [
+  $variables['statement']['object'] = $link ? [
     '#type' => 'link',
     '#title' => $item->label(),
     '#url' => Url::fromUri($link),
-  ];
+  ] : ['#plain_text' => $item->label()];
 
   // Time ago.
   $variables['time_ago'] = [
@@ -75,18 +75,20 @@ function template_preprocess_actstream_item(array &$variables): void {
     ]),
   ];
 
-  // External icon: links to the original item URL.
+  // External icon: links to the original item URL (omitted when link is empty).
   $external_icon_uri = '/' . $module_path . '/images/external.png';
-  $variables['external_icon'] = [
-    '#type' => 'link',
-    '#title' => [
-      '#theme' => 'image',
-      '#uri' => $external_icon_uri,
-      '#alt' => t('External link'),
-    ],
-    '#url' => Url::fromUri($link),
-    '#options' => ['attributes' => ['target' => '_blank', 'rel' => 'noopener noreferrer']],
-  ];
+  if (!empty($link)) {
+    $variables['external_icon'] = [
+      '#type' => 'link',
+      '#title' => [
+        '#theme' => 'image',
+        '#uri' => $external_icon_uri,
+        '#alt' => t('External link'),
+      ],
+      '#url' => Url::fromUri($link),
+      '#options' => ['attributes' => ['target' => '_blank', 'rel' => 'noopener noreferrer']],
+    ];
+  }
 }
 
 /**
@@ -195,7 +197,7 @@ function actstream_items_load(?int $uid = NULL, int $count = 20): array {
     ->condition('status', 1)
     ->sort('created', 'DESC')
     ->pager($count)
-    ->accessCheck(FALSE);
+    ->accessCheck(TRUE);
   if ($uid !== NULL) {
     $query->condition('uid', $uid);
   }
@@ -220,17 +222,34 @@ function actstream_items_load(?int $uid = NULL, int $count = 20): array {
  *   Array of item arrays with keys: title, link, body, timestamp, guid, raw.
  */
 function actstream_items_save(int $uid, string $service, array $items): void {
+  if (empty($items)) {
+    return;
+  }
+
   $storage = \Drupal::entityTypeManager()->getStorage('actstream_item');
+
+  // Build a GUID-keyed map; use link as fallback when guid is absent.
+  $guid_map = [];
   foreach ($items as $item) {
-    $guid = !empty($item['guid']) ? $item['guid'] : $item['link'];
-    $existing_ids = \Drupal::entityQuery('actstream_item')
-      ->condition('actstream_guid', $guid)
-      ->condition('service', $service)
-      ->condition('uid', $uid)
-      ->accessCheck(FALSE)
-      ->execute();
-    if (!empty($existing_ids)) {
-      $entity = $storage->load(reset($existing_ids));
+    $guid = !empty($item['guid']) ? $item['guid'] : ($item['link'] ?? '');
+    $guid_map[$guid] = $item;
+  }
+
+  // Load all existing entities for this service+user in one query (avoids N+1).
+  $existing = [];
+  $existing_ids = \Drupal::entityQuery('actstream_item')
+    ->condition('actstream_guid', array_keys($guid_map), 'IN')
+    ->condition('service', $service)
+    ->condition('uid', $uid)
+    ->accessCheck(FALSE)
+    ->execute();
+  foreach ($storage->loadMultiple($existing_ids) as $entity) {
+    $existing[$entity->get('actstream_guid')->value] = $entity;
+  }
+
+  foreach ($guid_map as $guid => $item) {
+    if (isset($existing[$guid])) {
+      $entity = $existing[$guid];
       if ($entity->label() === $item['title'] && $entity->get('actstream_body')->value === $item['body']) {
         continue;
       }
