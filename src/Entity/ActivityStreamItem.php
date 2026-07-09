@@ -5,6 +5,8 @@ namespace Drupal\actstream\Entity;
 use Drupal\Core\Entity\Attribute\ContentEntityType;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\ContentEntityDeleteForm;
+use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityViewBuilder;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
@@ -52,6 +54,8 @@ use Drupal\actstream\Form\ActivityStreamItemForm;
 )]
 class ActivityStreamItem extends ContentEntityBase implements ActivityStreamItemInterface {
 
+  use EntityChangedTrait;
+
   /**
    * {@inheritdoc}
    */
@@ -95,21 +99,6 @@ class ActivityStreamItem extends ContentEntityBase implements ActivityStreamItem
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
     $fields = parent::baseFieldDefinitions($entity_type);
-
-    // Serial ID.
-    $fields['id'] = BaseFieldDefinition::create('integer')
-      ->setLabel(new TranslatableMarkup('ID'))
-      ->setReadOnly(TRUE)
-      ->setSetting('unsigned', TRUE);
-
-    // UUID.
-    $fields['uuid'] = BaseFieldDefinition::create('uuid')
-      ->setLabel(new TranslatableMarkup('UUID'))
-      ->setReadOnly(TRUE);
-
-    // Language code.
-    $fields['langcode'] = BaseFieldDefinition::create('language')
-      ->setLabel(new TranslatableMarkup('Language'));
 
     // Title.
     $fields['title'] = BaseFieldDefinition::create('string')

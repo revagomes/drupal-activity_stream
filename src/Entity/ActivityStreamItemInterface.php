@@ -3,11 +3,12 @@
 namespace Drupal\actstream\Entity;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityChangedInterface;
 
 /**
  * Provides an interface for Activity Stream item entities.
  */
-interface ActivityStreamItemInterface extends ContentEntityInterface {
+interface ActivityStreamItemInterface extends ContentEntityInterface, EntityChangedInterface {
 
   /**
    * Gets the service identifier (e.g. 'feed', 'twitter').
