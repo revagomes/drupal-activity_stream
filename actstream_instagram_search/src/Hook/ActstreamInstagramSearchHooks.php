@@ -61,22 +61,22 @@ class ActstreamInstagramSearchHooks {
   public function fetchItems(int $uid, mixed $data): array {
     $config = $this->configFactory->get('actstream_instagram_search.settings');
     $access_token = $config->get('access_token');
-    $ig_user_id = $config->get('ig_user_id');
+    $user_id = $config->get('user_id');
     $hashtag = is_array($data) ? ($data['hashtag'] ?? '') : ltrim((string) $data, '#');
 
-    if (empty($access_token) || empty($ig_user_id) || empty($hashtag)) {
+    if (empty($access_token) || empty($user_id) || empty($hashtag)) {
       return [];
     }
 
     $logger = $this->loggerFactory->get('actstream_instagram_search');
 
     try {
-      // Step 1: resolve hashtag ID.
+      // Step 1: resolve hashtag to a hashtag_id.
       $tag_response = $this->httpClient->get(
         'https://graph.facebook.com/v19.0/ig_hashtag_search',
         [
           'query' => [
-            'user_id' => $ig_user_id,
+            'user_id' => $user_id,
             'q' => $hashtag,
             'access_token' => $access_token,
           ],
@@ -88,13 +88,14 @@ class ActstreamInstagramSearchHooks {
       }
       $hashtag_id = $tag_payload['data'][0]['id'];
 
-      // Step 2: fetch recent top media.
+      // Step 2: fetch recent media for the hashtag.
       $media_response = $this->httpClient->get(
-        'https://graph.facebook.com/v19.0/' . $hashtag_id . '/top_media',
+        'https://graph.facebook.com/v19.0/' . $hashtag_id . '/recent_media',
         [
           'query' => [
-            'user_id' => $ig_user_id,
-            'fields' => 'id,caption,permalink,timestamp,media_type',
+            'user_id' => $user_id,
+            'fields' => 'id,caption,permalink,timestamp',
+            'limit' => 20,
             'access_token' => $access_token,
           ],
         ]
@@ -112,11 +113,11 @@ class ActstreamInstagramSearchHooks {
           : time();
 
         $items[] = [
-          'title' => $caption ? mb_substr($caption, 0, 255) : $this->t('Instagram post'),
+          'title' => $caption !== '' ? mb_substr($caption, 0, 200) : (string) $this->t('Instagram post'),
           'body' => $caption,
           'link' => $post['permalink'] ?? '',
           'timestamp' => $timestamp,
-          'guid' => 'ig:' . $post['id'],
+          'guid' => 'instagram_search:' . $post['id'],
           'raw' => json_encode($post),
         ];
       }

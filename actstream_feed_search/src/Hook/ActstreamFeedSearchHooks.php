@@ -54,60 +54,70 @@ class ActstreamFeedSearchHooks {
   /**
    * Implements hook_actstream_feed_search_items_fetch().
    *
-   * Fetches a configured feed URL and filters items by a keyword or phrase.
+   * Fetches all feed URLs from actstream_feed_search.settings and returns
+   * items whose title or body contains the requested hashtag. The $data
+   * argument is expected to carry ['hashtag' => 'drupalcon'] as set by
+   * actstream_event cron; a bare hashtag string is also accepted.
    *
    * @param int $uid
-   *   The user ID (unused — feed search is global).
+   *   Unused — feed search is a site-level operation.
    * @param mixed $data
-   *   An array with 'url' and optional 'keyword', or a bare URL string.
+   *   Array with key 'hashtag', or a bare hashtag string (without #).
    */
   #[Hook('actstream_feed_search_items_fetch')]
   public function fetchItems(int $uid, mixed $data): array {
-    if (is_string($data)) {
-      $data = ['url' => $data];
-    }
+    $hashtag = is_array($data) ? ($data['hashtag'] ?? '') : ltrim((string) $data, '#');
+    $feed_urls = $this->configFactory
+      ->get('actstream_feed_search.settings')
+      ->get('feed_urls') ?: [];
 
-    $url = trim($data['url'] ?? '');
-    $keyword = strtolower(trim($data['keyword'] ?? ''));
-
-    if (empty($url)) {
+    if (empty($feed_urls) || empty($hashtag)) {
       return [];
     }
 
+    $needle = mb_strtolower('#' . ltrim($hashtag, '#'));
     $logger = $this->loggerFactory->get('actstream_feed_search');
     $temp_dir = $this->fileSystem->getTempDirectory();
-
-    $feed = new \SimplePie();
-    $feed->set_cache_location($temp_dir);
-    $feed->set_cache_duration(300);
-    $feed->set_useragent('Activity Stream for Drupal');
-    $feed->set_feed_url($url);
-
-    if (!$feed->init()) {
-      $logger->error('Feed search fetch error for @url: @error', [
-        '@url' => $url,
-        '@error' => $feed->error(),
-      ]);
-      return [];
-    }
-
     $items = [];
-    foreach ($feed->get_items() as $feed_item) {
-      $title = $feed_item->get_title() ?? '';
-      $body = $feed_item->get_description() ?? '';
 
-      if ($keyword !== '' && !str_contains(strtolower($title), $keyword) && !str_contains(strtolower($body), $keyword)) {
+    foreach ($feed_urls as $url) {
+      $url = trim($url);
+      if (empty($url)) {
         continue;
       }
 
-      $items[] = [
-        'title' => $title,
-        'body' => $body,
-        'timestamp' => $feed_item->get_date('U') ?: $this->time->getRequestTime(),
-        'guid' => $feed_item->get_id(FALSE),
-        'raw' => $feed->get_raw_data(),
-        'link' => Html::decodeEntities($feed_item->get_permalink()),
-      ];
+      $feed = new \SimplePie();
+      $feed->set_cache_location($temp_dir);
+      $feed->set_cache_duration(300);
+      $feed->set_useragent('Activity Stream for Drupal');
+      $feed->set_feed_url($url);
+
+      if (!$feed->init()) {
+        $logger->error('Feed search fetch error for @url: @error', [
+          '@url' => $url,
+          '@error' => $feed->error(),
+        ]);
+        continue;
+      }
+
+      foreach ($feed->get_items() as $feed_item) {
+        $title = $feed_item->get_title() ?? '';
+        $body = $feed_item->get_description() ?? '';
+        $haystack = mb_strtolower($title . ' ' . $body);
+
+        if (!str_contains($haystack, $needle)) {
+          continue;
+        }
+
+        $items[] = [
+          'title' => $title,
+          'body' => $body,
+          'timestamp' => $feed_item->get_date('U') ?: $this->time->getRequestTime(),
+          'guid' => $feed_item->get_id(FALSE),
+          'raw' => $feed->get_raw_data(),
+          'link' => Html::decodeEntities($feed_item->get_permalink()),
+        ];
+      }
     }
 
     return $items;
