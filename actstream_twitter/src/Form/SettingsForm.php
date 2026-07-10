@@ -30,6 +30,14 @@ class SettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $config = $this->config('actstream_twitter.settings');
 
+    $form['api_tier_notice'] = [
+      '#type' => 'markup',
+      '#markup' => '<div class="messages messages--warning">' . $this->t(
+        'The X (Twitter) v2 API requires a <strong>paid Basic tier</strong> or higher. Free API access does not include user timelines — fetch calls will silently return zero items without a paid subscription. See the <a href=":url" target="_blank" rel="noopener noreferrer">X API pricing page</a>.',
+        [':url' => 'https://developer.x.com/en/portal/products']
+      ) . '</div>',
+    ];
+
     $form['bearer_token'] = [
       '#type' => 'textfield',
       '#title' => $this->t('X (Twitter) Bearer token'),
