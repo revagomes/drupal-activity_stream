@@ -14,3 +14,11 @@ actstream_wall.refresh:
     _permission: 'access content'
   options:
     no_cache: TRUE
+
+actstream_wall.settings:
+  path: '/admin/config/services/actstream/wall'
+  defaults:
+    _form: '\Drupal\actstream_wall\Form\WallSettingsForm'
+    _title: 'Social Wall settings'
+  requirements:
+    _permission: 'administer site configuration'

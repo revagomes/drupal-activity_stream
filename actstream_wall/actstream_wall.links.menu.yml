@@ -4,3 +4,9 @@ actstream_wall.page:
   route_name: actstream_wall.page
   menu_name: main
   weight: 10
+
+actstream_wall.settings:
+  title: 'Activity Stream Wall'
+  route_name: actstream_wall.settings
+  parent: system.admin_config_services
+  description: 'Configure the Social Wall refresh interval and items per page.'
