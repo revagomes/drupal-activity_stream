@@ -1,0 +1,4 @@
+services:
+  actstream_instagram_search.hooks:
+    class: Drupal\actstream_instagram_search\Hook\ActstreamInstagramSearchHooks
+    autowire: true
