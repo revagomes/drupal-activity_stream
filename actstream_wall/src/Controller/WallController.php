@@ -3,6 +3,8 @@
 namespace Drupal\actstream_wall\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Render\RendererInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -10,6 +12,22 @@ use Symfony\Component\HttpFoundation\Request;
  * Controller for the Activity Stream social wall.
  */
 class WallController extends ControllerBase {
+
+  /**
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected RendererInterface $renderer;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    $instance = parent::create($container);
+    $instance->renderer = $container->get('renderer');
+    return $instance;
+  }
 
   /**
    * Renders the social wall page.
@@ -71,9 +89,7 @@ class WallController extends ControllerBase {
         ->loadMultiple($ids)
       : [];
 
-    $view_builder = $this->entityTypeManager()
-      ->getViewBuilder('actstream_item');
-    $renderer = \Drupal::service('renderer');
+    $view_builder = $this->entityTypeManager()->getViewBuilder('actstream_item');
     $result = [];
     $last_ts = $since;
 
@@ -82,7 +98,7 @@ class WallController extends ControllerBase {
       if ($ts > $last_ts) {
         $last_ts = $ts;
       }
-      $html = (string) $renderer->renderPlain($view_builder->view($item));
+      $html = (string) $this->renderer->renderPlain($view_builder->view($item));
       $result[] = ['id' => $item->id(), 'created' => $ts, 'html' => $html];
     }
 
