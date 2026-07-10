@@ -2,6 +2,7 @@
 
 namespace Drupal\actstream\Hook;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
@@ -11,6 +12,16 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 class ActstreamHooks {
 
   use StringTranslationTrait;
+
+  /**
+   * Constructs a new ActstreamHooks instance.
+   *
+   * @param \Drupal\Core\Database\Connection $database
+   *   The database connection.
+   */
+  public function __construct(
+    private readonly Connection $database,
+  ) {}
 
   /**
    * Implements hook_theme().
@@ -60,7 +71,7 @@ class ActstreamHooks {
    */
   #[Hook('cron')]
   public function cron(): void {
-    $results = \Drupal::database()
+    $results = $this->database
       ->select('actstream_account', 'a')
       ->fields('a', ['uid', 'service', 'data'])
       ->execute()
