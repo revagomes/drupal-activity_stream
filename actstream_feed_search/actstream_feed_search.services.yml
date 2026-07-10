@@ -1,0 +1,4 @@
+services:
+  actstream_feed_search.hooks:
+    class: Drupal\actstream_feed_search\Hook\ActstreamFeedSearchHooks
+    autowire: true
