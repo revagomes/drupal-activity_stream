@@ -1,0 +1,8 @@
+services:
+  actstream.commands:
+    class: Drupal\actstream\Commands\ActstreamCommands
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+    tags:
+      - { name: drush.command }
