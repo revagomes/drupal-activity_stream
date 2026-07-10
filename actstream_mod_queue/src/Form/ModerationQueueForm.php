@@ -2,13 +2,39 @@
 
 namespace Drupal\actstream_mod_queue\Form;
 
+use Drupal\Core\Datetime\DateFormatterInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Bulk moderation queue for pending Activity Stream wall items.
  */
 class ModerationQueueForm extends FormBase {
+
+  /**
+   * Constructs a new ModerationQueueForm.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $dateFormatter
+   *   The date formatter.
+   */
+  public function __construct(
+    protected readonly EntityTypeManagerInterface $entityTypeManager,
+    protected readonly DateFormatterInterface $dateFormatter,
+  ) {}
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+      $container->get('entity_type.manager'),
+      $container->get('date.formatter'),
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -24,7 +50,9 @@ class ModerationQueueForm extends FormBase {
     array $form,
     FormStateInterface $form_state
   ): array {
-    $ids = \Drupal::entityQuery('actstream_item')
+    $ids = $this->entityTypeManager
+      ->getStorage('actstream_item')
+      ->getQuery()
       ->condition('actstream_event_id', '', '!=')
       ->condition('status', 0)
       ->sort('created', 'DESC')
@@ -33,19 +61,18 @@ class ModerationQueueForm extends FormBase {
       ->execute();
 
     $items = $ids
-      ? \Drupal::entityTypeManager()
+      ? $this->entityTypeManager
         ->getStorage('actstream_item')
         ->loadMultiple($ids)
       : [];
 
     $options = [];
-    $date_formatter = \Drupal::service('date.formatter');
     foreach ($items as $item) {
       $options[$item->id()] = [
         'event' => $item->get('actstream_event_id')->value,
         'service' => $item->get('service')->value,
         'title' => $item->label(),
-        'created' => $date_formatter->format(
+        'created' => $this->dateFormatter->format(
           $item->get('created')->value,
           'short'
         ),
@@ -95,8 +122,7 @@ class ModerationQueueForm extends FormBase {
       return;
     }
 
-    $storage = \Drupal::entityTypeManager()
-      ->getStorage('actstream_item');
+    $storage = $this->entityTypeManager->getStorage('actstream_item');
     $action = $form_state->getTriggeringElement()['#name'] ?? '';
 
     if ($action === 'approve') {
