@@ -57,13 +57,15 @@ class ActstreamTwitterSearchHooks {
   #[Hook('actstream_twitter_search_items_fetch')]
   public function fetchItems(int $uid, mixed $data): array {
     $bearer_token = $this->configFactory
-      ->get('actstream_twitter.settings')
+      ->get('actstream_twitter_search.settings')
       ->get('bearer_token');
 
-    $query = is_array($data) ? ($data['query'] ?? '') : (string) $data;
-    if (empty($bearer_token) || empty($query)) {
+    // $data['hashtag'] is set by actstream_event cron; also accept a bare string.
+    $hashtag = is_array($data) ? ($data['hashtag'] ?? ($data['query'] ?? '')) : ltrim((string) $data, '#');
+    if (empty($bearer_token) || empty($hashtag)) {
       return [];
     }
+    $query = '#' . ltrim($hashtag, '#');
 
     $logger = $this->loggerFactory->get('actstream_twitter_search');
 
@@ -108,7 +110,7 @@ class ActstreamTwitterSearchHooks {
           'body' => $tweet['text'],
           'link' => $post_url,
           'timestamp' => $timestamp,
-          'guid' => 'twitter:' . $tweet_id,
+          'guid' => 'twitter_search:' . $tweet_id,
           'raw' => json_encode($tweet),
         ];
       }
