@@ -1,0 +1,4 @@
+services:
+  actstream_facebook_page.hooks:
+    class: Drupal\actstream_facebook_page\Hook\ActstreamFacebookPageHooks
+    autowire: true
