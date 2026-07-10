@@ -5,7 +5,6 @@ namespace Drupal\actstream\Plugin\Block;
 use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
@@ -29,13 +28,6 @@ class ActivityStreamBlock extends BlockBase implements ContainerFactoryPluginInt
   protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
-   * The module handler.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected ModuleHandlerInterface $moduleHandler;
-
-  /**
    * Constructs a new ActivityStreamBlock.
    *
    * @param array $configuration
@@ -46,19 +38,15 @@ class ActivityStreamBlock extends BlockBase implements ContainerFactoryPluginInt
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler.
    */
   public function __construct(
     array $configuration,
     string $plugin_id,
     mixed $plugin_definition,
     EntityTypeManagerInterface $entity_type_manager,
-    ModuleHandlerInterface $module_handler,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
-    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -70,7 +58,6 @@ class ActivityStreamBlock extends BlockBase implements ContainerFactoryPluginInt
       $plugin_id,
       $plugin_definition,
       $container->get('entity_type.manager'),
-      $container->get('module_handler'),
     );
   }
 
@@ -111,14 +98,9 @@ class ActivityStreamBlock extends BlockBase implements ContainerFactoryPluginInt
       '#attributes' => ['class' => ['actstream-more-link']],
     ];
 
-    return $build;
-  }
+    $build['#cache']['tags'] = ['actstream_item_list'];
 
-  /**
-   * {@inheritdoc}
-   */
-  public function getCacheMaxAge(): int {
-    return 0;
+    return $build;
   }
 
 }
