@@ -48,7 +48,7 @@ class ActivityStreamController extends ControllerBase {
    *   The page title.
    */
   public function userPageTitle(UserInterface $user): string {
-    return $user->getDisplayName() . "'s Activity Stream";
+    return $this->t("@name's Activity Stream", ['@name' => $user->getDisplayName()]);
   }
 
   /**
