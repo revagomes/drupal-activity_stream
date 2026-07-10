@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="actstream">
   <description>Drupal coding standards for Activity Stream.</description>
+  <!-- Main module -->
   <file>src</file>
   <file>actstream.module</file>
   <file>actstream.install</file>
-  <file>actstream_feed/actstream_feed.module</file>
-  <file>actstream_feed/actstream_feed.install</file>
-  <file>actstream_twitter/actstream_twitter.module</file>
-  <file>actstream_facebook_page/actstream_facebook_page.module</file>
-  <file>actstream_facebook_page/src</file>
-  <file>actstream_event/actstream_event.module</file>
-  <file>actstream_event/src</file>
   <file>tests</file>
+  <!-- Sub-module sources -->
+  <file>actstream_event/src</file>
+  <file>actstream_facebook_page/src</file>
+  <file>actstream_feed/src</file>
+  <file>actstream_feed_search/src</file>
+  <file>actstream_flickr/src</file>
+  <file>actstream_instagram_search/src</file>
+  <file>actstream_lastfm/src</file>
+  <file>actstream_mod_queue/src</file>
+  <file>actstream_twitter/src</file>
+  <file>actstream_twitter_search/src</file>
+  <file>actstream_wall/src</file>
   <rule ref="Drupal"/>
   <rule ref="DrupalPractice"/>
-  <!-- SimplePie is a vendored library, not subject to Drupal CS -->
-  <exclude-pattern>actstream_feed/SimplePie.compiled.php</exclude-pattern>
 </ruleset>

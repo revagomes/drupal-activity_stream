@@ -8,15 +8,18 @@ on:
 
 jobs:
   phpcs:
-    name: PHP CodeSniffer
+    name: PHP CodeSniffer (PHP ${{ matrix.php-version }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.1', '8.2', '8.3']
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: ${{ matrix.php-version }}
           tools: composer
 
       - name: Validate composer.json
@@ -26,7 +29,66 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: PHP lint
-        run: find src actstream.module actstream.install actstream_feed/actstream_feed.module actstream_twitter/actstream_twitter.module actstream_facebook_page/actstream_facebook_page.module actstream_facebook_page/src -name '*.php' -exec php -l {} \;
+        run: |
+          find \
+            src tests actstream.module actstream.install \
+            actstream_event/src \
+            actstream_facebook_page/src \
+            actstream_feed/src \
+            actstream_feed_search/src \
+            actstream_flickr/src \
+            actstream_instagram_search/src \
+            actstream_lastfm/src \
+            actstream_mod_queue/src \
+            actstream_twitter/src \
+            actstream_twitter_search/src \
+            actstream_wall/src \
+            -name '*.php' -exec php -l {} \;
 
       - name: PHPCS
         run: vendor/bin/phpcs --standard=phpcs.xml.dist
+
+  phpunit:
+    name: PHPUnit (PHP ${{ matrix.php-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.1', '8.2', '8.3']
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: drupal
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: pdo_mysql, gd
+          tools: composer
+
+      - name: Install Drupal for testing
+        run: |
+          composer create-project drupal/recommended-project:^10.3 drupal --no-interaction --no-progress
+          cd drupal
+          composer require drupal/core-dev --dev --no-interaction --no-progress
+          mkdir -p web/modules/custom
+          ln -s "$(cd .. && pwd)" web/modules/custom/actstream
+
+      - name: Run kernel tests
+        working-directory: drupal
+        env:
+          SIMPLETEST_DB: mysql://root:root@127.0.0.1/drupal
+          SIMPLETEST_BASE_URL: http://localhost
+        run: |
+          vendor/bin/phpunit web/modules/custom/actstream/tests \
+            --configuration web/core/phpunit.xml.dist \
+            --testsuite kernel \
+            --no-coverage
