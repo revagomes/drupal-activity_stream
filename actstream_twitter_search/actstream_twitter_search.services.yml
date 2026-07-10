@@ -1,0 +1,4 @@
+services:
+  actstream_twitter_search.hooks:
+    class: Drupal\actstream_twitter_search\Hook\ActstreamTwitterSearchHooks
+    autowire: true
